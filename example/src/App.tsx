@@ -1,27 +1,43 @@
-import * as React from 'react';
-
-import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-zeed-ai';
+import React, { useState, useCallback } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { StyleSheet, View, Button } from 'react-native';
+import { Zeed, ZeedProvider, useZeed } from 'react-native-zeed-ai';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const [storyCard, setStoryCard] = useState<JSX.Element | null>(null);
 
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
-  }, []);
+  Zeed.init({ apiKey: 'FVJb6WbcGE7YVSH0vpK0aaYzoEEDFbeg36Bmghgs' });
 
   return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
-    </View>
+    <ZeedProvider>
+      <View style={styles.container}>
+        <StoryGenerator setStoryCard={setStoryCard} />
+        {storyCard}
+      </View>
+    </ZeedProvider>
   );
+}
+
+function StoryGenerator({
+  setStoryCard,
+}: {
+  setStoryCard: Dispatch<SetStateAction<JSX.Element | null>>;
+}) {
+  const { setVisible } = useZeed();
+
+  const generateStory = useCallback(async () => {
+    const card = await Zeed.getStoryCard('AMZN', false);
+    setVisible(true);
+    setStoryCard(card);
+  }, [setStoryCard, setVisible]);
+
+  return <Button title="Generate Story" color="red" onPress={generateStory} />;
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 100,
   },
   box: {
     width: 60,

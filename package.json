@@ -2,14 +2,17 @@
   "name": "react-native-zeed-ai",
   "version": "0.1.0",
   "description": "This package is used to access the zeed AI story.",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
   "types": "lib/typescript/src/index.d.ts",
-  "react-native": "src/index",
-  "source": "src/index",
+  "react-native": "src/index.tsx",
+  "source": "src/index.tsx",
   "files": [
     "src",
     "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
     "android",
     "ios",
     "cpp",
@@ -20,9 +23,6 @@
     "!android/gradlew",
     "!android/gradlew.bat",
     "!android/local.properties",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__",
     "!**/.*"
   ],
   "scripts": {
@@ -69,7 +69,7 @@
     "react": "18.2.0",
     "react-native": "0.74.2",
     "react-native-builder-bob": "^0.23.2",
-    "release-it": "^15.0.0",
+    "release-it": "^17.3.0",
     "typescript": "^5.2.2"
   },
   "resolutions": {
@@ -148,12 +148,13 @@
     "targets": [
       "commonjs",
       "module",
-      [
-        "typescript",
-        {
-          "project": "tsconfig.build.json"
-        }
-      ]
+      "typescript"
     ]
+  },
+  "dependencies": {
+    "@expo/webpack-config": "19.0.1",
+    "@typescript-eslint/typescript-estree": "^7.13.0",
+    "expo-av": "~13.4.1",
+    "react-native-webview": "13.6.3"
   }
 }
