@@ -18,6 +18,7 @@ class ApiClient {
       source_ticker: '',
       n_cards: 0,
       audio: false,
+      lang: 'en',
     }
   ): Promise<ApiResponse<T>> {
     // Ensure the API key is provided
@@ -65,7 +66,7 @@ class ApiClient {
   }
 
   // Method to get a flowchart from the API
-  async getFlow(finasset: string): Promise<ApiResponse<Card[]>> {
+  async getFlow(finasset: string, lang: string): Promise<ApiResponse<Card[]>> {
     // Ensure the API key is provided
     if (!this.apiKey) {
       throw new Error(
@@ -82,6 +83,7 @@ class ApiClient {
       body: JSON.stringify({
         action: 'flowchart',
         source_ticker: finasset,
+        lang: lang,
       }),
     };
 
@@ -121,7 +123,8 @@ class ApiClient {
     finasset: string,
     fixed: number[],
     n_cards: number,
-    audio: boolean = false
+    audio: boolean = false,
+    lang: string = 'en'
   ): Promise<Card[]> {
     const requestData: StoryRequest = {
       action: 'generate',
@@ -129,13 +132,14 @@ class ApiClient {
       source_ticker: finasset,
       n_cards: n_cards,
       audio: audio,
+      lang: lang,
     };
 
     try {
       if (fixed.includes(30)) {
         const [remainingDataCards, flowData] = await Promise.all([
           this.fetchCards<Card>(requestData),
-          this.getFlow(finasset),
+          this.getFlow(finasset, lang),
         ]);
 
         return [...(remainingDataCards.cards || []), ...(flowData.cards || [])];

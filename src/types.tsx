@@ -61,6 +61,7 @@ export type StoryRequest = {
   source_ticker: string;
   n_cards: number;
   audio: boolean;
+  lang: string;
 };
 
 export type Card = {

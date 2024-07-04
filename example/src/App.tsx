@@ -26,7 +26,7 @@ function StoryGenerator({
   const { setVisible } = useZeed();
 
   const generateStory = useCallback(async () => {
-    const card = await Zeed.getStoryCard('AMZN', false);
+    const card = await Zeed.getStoryCard('AMZN', false, 'es');
     setVisible(true);
     setStoryCard(card);
   }, [setStoryCard, setVisible]);

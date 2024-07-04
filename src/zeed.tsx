@@ -2,6 +2,7 @@ import ApiClient from './api';
 import type { Card } from './types';
 import CardPlayer from './card-player';
 import React from 'react';
+import type { Translations } from './constants';
 
 class Zeed {
   api?: ApiClient;
@@ -17,19 +18,21 @@ class Zeed {
     finasset: string,
     fixed: number[],
     n_cards: number,
-    audio: boolean = false
+    audio: boolean = false,
+    lang: keyof Translations
   ): Promise<Card[]> {
     if (!this.api) {
       throw new Error(
         'Zeed API client not initialized. Call init() before using other methods.'
       );
     }
-    return this.api.getStories(finasset, fixed, n_cards, audio);
+    return this.api.getStories(finasset, fixed, n_cards, audio, lang);
   }
 
   async getStoryCard(
     finasset: string,
-    audio: boolean = false
+    audio: boolean = false,
+    lang: keyof Translations
   ): Promise<JSX.Element | null> {
     try {
       return (
@@ -38,6 +41,7 @@ class Zeed {
           finasset={finasset}
           n_cards={0}
           audio={audio}
+          lang={lang}
         />
       );
     } catch (error) {

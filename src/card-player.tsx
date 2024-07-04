@@ -13,6 +13,8 @@ import VideoProgressBar from './progressBar';
 import LottiePlayer from './lottie-player';
 import { useZeed } from './ZeedProvider';
 import Zeed from './zeed';
+import { Language } from './constants';
+import type { Translations } from './constants';
 
 interface CardPlayerProps {
   ZeedClient: typeof Zeed;
@@ -20,6 +22,11 @@ interface CardPlayerProps {
   fixed?: string;
   n_cards: number;
   audio: boolean;
+  lang: keyof Translations;
+}
+interface Section {
+  text: string;
+  cards: Card[];
 }
 
 const CardPlayer: React.FC<CardPlayerProps> = ({
@@ -27,6 +34,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   finasset,
   n_cards,
   audio,
+  lang,
 }) => {
   const { visible, setVisible } = useZeed();
   const [section1, setSection1] = useState<Card[]>([]);
@@ -38,11 +46,11 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   const progressBarRefs = useRef<Array<any>>([]);
   const lottiePlayerRef = useRef<any>(null);
   const { width } = Dimensions.get('window');
-  const videoSections = [
-    { text: 'Performance', cards: section1 },
-    { text: 'Industry', cards: section2 },
-    { text: 'Ratings', cards: section3 },
-    { text: 'Financials', cards: section4 },
+  const videoSections: Section[] = [
+    { text: Language.Performance[lang], cards: section1 },
+    { text: Language.Industry[lang], cards: section2 },
+    { text: Language.Ratings[lang], cards: section3 },
+    { text: Language.Financials[lang], cards: section4 },
   ];
   const sectionNumber = videoSections.length;
 
@@ -154,15 +162,16 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
           finasset,
           [27, 29],
           n_cards,
-          audio
+          audio,
+          lang
         );
         if (data.length > 0) {
           setSection1(data);
 
           const promises: Promise<Card[]>[] = [
-            ZeedClient.story(finasset, [7, 1, 14, 19], 0, audio),
-            ZeedClient.story(finasset, [26], 0, audio),
-            ZeedClient.story(finasset, [30], 0, audio),
+            ZeedClient.story(finasset, [7, 1, 14, 19], 0, audio, lang),
+            ZeedClient.story(finasset, [26], 0, audio, lang),
+            ZeedClient.story(finasset, [30], 0, audio, lang),
           ];
 
           promises.forEach(async (promise, index) => {
@@ -188,7 +197,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
     };
 
     fetchLottieJson();
-  }, [finasset, ZeedClient, audio, n_cards]);
+  }, [finasset, ZeedClient, audio, n_cards, lang]);
 
   // Handle video completion within a section
   const handleVideoComplete = (index: number, section: Card[]): void => {
