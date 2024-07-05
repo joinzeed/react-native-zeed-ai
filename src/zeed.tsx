@@ -3,7 +3,6 @@ import type { Card } from './types';
 import CardPlayer from './card-player';
 import React from 'react';
 import type { Translations } from './constants';
-
 class Zeed {
   api?: ApiClient;
   apiKey?: string;
@@ -49,6 +48,32 @@ class Zeed {
       return null;
     }
   }
+
+  prefetchStory = async (
+    setPrefetched: Function,
+    stocklist: string[] = [
+      'AMZN',
+      'MSFT',
+      'TSLA',
+      'AAPL',
+      'GOOG',
+      'META',
+      'NVDA',
+    ]
+  ) => {
+    if (!this.api) {
+      throw new Error(
+        'Zeed API client not initialized. Call init() before using other methods.'
+      );
+    }
+
+    try {
+      const prefetchedData = await this.api.getPrefetchedStory(stocklist);
+      setPrefetched(prefetchedData || {});
+    } catch (error) {
+      console.error('Error prefetching stories:', error);
+    }
+  };
 }
 
 export default new Zeed();

@@ -1,10 +1,12 @@
 import React, { createContext, useState, useContext } from 'react';
 import type { ReactNode } from 'react';
-
+import type { Card } from './types';
 // Define the properties for the Zeed context
 interface ZeedContextProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
+  prefetched: { [key: string]: Card[] } | undefined;
+  setPrefetched: (prefetched: { [key: string]: Card[] }) => void;
 }
 
 // Create the Zeed context with default value as undefined
@@ -31,10 +33,13 @@ interface ZeedProviderProps {
 export const ZeedProvider = ({ children }: ZeedProviderProps): JSX.Element => {
   // State for the visibility
   const [visible, setVisible] = useState<boolean>(true);
+  const [prefetched, setPrefetched] = useState<{ [key: string]: Card[] }>();
 
   return (
     // Provide the Zeed context to the children
-    <ZeedReadyContext.Provider value={{ visible, setVisible }}>
+    <ZeedReadyContext.Provider
+      value={{ visible, setVisible, prefetched, setPrefetched }}
+    >
       {children}
     </ZeedReadyContext.Provider>
   );

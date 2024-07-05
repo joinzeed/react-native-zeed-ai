@@ -36,7 +36,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   audio,
   lang,
 }) => {
-  const { visible, setVisible } = useZeed();
+  const { visible, setVisible, prefetched } = useZeed();
   const [section1, setSection1] = useState<Card[]>([]);
   const [section2, setSection2] = useState<Card[]>([]);
   const [section3, setSection3] = useState<Card[]>([]);
@@ -158,46 +158,41 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   useEffect(() => {
     const fetchLottieJson = async () => {
       try {
-        const data: Card[] = await ZeedClient.story(
-          finasset,
-          [27, 29],
-          n_cards,
-          audio,
-          lang
-        );
-        if (data.length > 0) {
+        let data;
+        if (prefetched && prefetched[finasset]) {
+          data = prefetched[finasset];
+        } else {
+          data = await ZeedClient.story(
+            finasset,
+            [27, 29],
+            n_cards,
+            audio,
+            lang
+          );
+        }
+        if (data && data.length > 0) {
           setSection1(data);
-
-          const promises: Promise<Card[]>[] = [
-            ZeedClient.story(finasset, [7, 1, 14, 19], 0, audio, lang),
-            ZeedClient.story(finasset, [26], 0, audio, lang),
-            ZeedClient.story(finasset, [30], 0, audio, lang),
+          const promises = [
+            ZeedClient.story(finasset, [7, 1, 14, 19], 0, audio, lang)
+              .then(setSection2)
+              .catch((err) => console.error('Error in section 2:', err)),
+            ZeedClient.story(finasset, [26], 0, audio, lang)
+              .then(setSection3)
+              .catch((err) => console.error('Error in section 3:', err)),
+            ZeedClient.story(finasset, [30], 0, audio, lang)
+              .then(setSection4)
+              .catch((err) => console.error('Error in section 4:', err)),
           ];
 
-          promises.forEach(async (promise, index) => {
-            const sectionData: Card[] = await promise;
-            switch (index) {
-              case 0:
-                setSection2(sectionData);
-                break;
-              case 1:
-                setSection3(sectionData);
-                break;
-              case 2:
-                setSection4(sectionData);
-                break;
-              default:
-                break;
-            }
-          });
+          await Promise.all(promises);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error fetching stories:', error);
       }
     };
 
     fetchLottieJson();
-  }, [finasset, ZeedClient, audio, n_cards, lang]);
+  }, [finasset, prefetched, ZeedClient, audio, n_cards, lang]);
 
   // Handle video completion within a section
   const handleVideoComplete = (index: number, section: Card[]): void => {

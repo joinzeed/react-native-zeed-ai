@@ -152,6 +152,32 @@ class ApiClient {
       return [];
     }
   }
+
+  async getPrefetchedStory(stocklist: string[]) {
+    console.log('start prefetch');
+    const stories: { [key: string]: Card[] } = {};
+
+    try {
+      // Map each stock item to a promise that fetches its stories
+      const promises = stocklist.map(async (item) => {
+        try {
+          const storyData = await this.getStories(item, [27, 29], 0, true);
+          stories[item] = storyData; // Store fetched stories in the object
+        } catch (error) {
+          console.error(`Error fetching stories for ${item}:`, error);
+          stories[item] = []; // Handle error case by assigning empty array
+        }
+      });
+
+      // Wait for all promises to resolve
+      await Promise.all(promises);
+      console.log('prefetch stories finished!');
+      return stories; // Return the populated stories object
+    } catch (error) {
+      console.error('Error in getPrefetchedStory:', error);
+      return null; // Handle any unexpected errors
+    }
+  }
 }
 
 export default ApiClient;
