@@ -23,7 +23,7 @@ npm install react-native-zeed-ai
 
 ## Usage
 
-To use `react-native-zeed-ai`, you need to initialize it with an API key, wrap your application components with ZeedProvider, and then use the hooks and components provided by the package to generate and display story content.
+To use `react-native-zeed-ai`, you need to initialize it with an API key, wrap your application components with `ZeedProvider`, and then use the hooks and components provided by the package to generate and display story content.
 
 ### Basic Setup
 
@@ -34,8 +34,14 @@ To use `react-native-zeed-ai`, you need to initialize it with an API key, wrap y
    ```js
    import { Zeed } from 'react-native-zeed-ai';
 
-   Zeed.init({ apiKey: 'YOUR_API_KEY' });
+   Zeed.init({ apiKey: 'YOUR_API_KEY', lang: 'YOUR LANGUAGE' });
    ```
+
+   | Language | Abbreviation | Supported |
+   | -------- | ------------ | --------- |
+   | English  | 'en'         | ✅        |
+   | Spanish  | 'es'         | ✅        |
+   | Arabic   | 'ar'         | ✅        |
 
 2. Wrap your component tree with `ZeedProvider`:
 
@@ -83,26 +89,42 @@ const StoryGenerator = () => {
 };
 ```
 
+### Navigate to the story
+
+Add your implemented component into your main app.
+
+```javascript
+{
+  /* Other components */
+}
+<View>
+  <StoryGenerator />
+</View>;
+{
+  /* Other components */
+}
+```
+
 You can check the [example](example/src/App.tsx) folder for more details.
 
 ## Prefetch stories
 
 The `prefetchStory` method allows you to fetch and store story data for a predefined list of stocks or any other list you choose to define. This method is designed to be called perhaps on application load or just before entering a component that requires the story data. Here is how to use `prefetchStory`:
 
-1. Define a Function to Handle Prefetched Data: Create a function that will handle the data once prefetched. This function will be used to update your application state or cache.
+1. Get the the setter function from ` useZeed()`
 
 ```javascript
-function setPrefetchedData(data) {
-  // Handle or store the prefetched data as needed
-}
+import { useZeed } from 'react-native-zeed-ai';
+
+const { setPrefetched } = useZeed();
 ```
 
-2. Call the prefetchStory Method: You can call this method at an appropriate time in your application flow. Provide the function defined above as a callback to handle the prefetched data.
+2. Call the prefetchStory Method: You can call this method at an appropriate time in your application flow.
 
 ```javascript
-function setPrefetchedData(data) {
-  Zeed.prefetchStory(setPrefetchedData);
-}
+useEffect(() => {
+  Zeed.prefetchStory(setPrefetched).catch(console.error);
+}, [setPrefetched]);
 ```
 
 By default, prefetchStory uses a predefined list of popular stocks (AMZN, MSFT, TSLA, etc.). If you want to use a custom list, pass your list of assets as a second argument:
@@ -110,4 +132,12 @@ By default, prefetchStory uses a predefined list of popular stocks (AMZN, MSFT, 
 ```javascript
 const customStockList = ['BABA', 'NFLX', 'SPOT'];
 Zeed.prefetchStory(setPrefetchedData, customStockList);
+```
+
+## Change Language
+
+You can easily change the story language with the following function:
+
+```javascript
+zeed.changeLang({ lang: 'es' });
 ```

@@ -3,7 +3,7 @@ import { StyleSheet, View, Button } from 'react-native';
 import { Zeed, ZeedProvider, useZeed } from 'react-native-zeed-ai';
 
 export default function App() {
-  Zeed.init({ apiKey: 'FVJb6WbcGE7YVSH0vpK0aaYzoEEDFbeg36Bmghgs' });
+  Zeed.init({ apiKey: 'v4GuVSoX211nsxdDBa8VN1O3MMY0jXYB4kGDsytN', lang: 'es' });
   return (
     <ZeedProvider>
       <View style={styles.container}>
@@ -12,7 +12,6 @@ export default function App() {
     </ZeedProvider>
   );
 }
-
 const StoryGenerator = () => {
   const [storyCard, setStoryCard] = useState<JSX.Element | null>(null);
   const { visible, setVisible, setPrefetched } = useZeed();
@@ -30,7 +29,7 @@ const StoryGenerator = () => {
   const generateStory = useCallback(
     async (symbol: string) => {
       try {
-        const card = await Zeed.getStoryCard(symbol, false, 'es');
+        const card = await Zeed.getStoryCard(symbol, false);
         setStoryCard(card);
         setVisible(true);
       } catch (error) {

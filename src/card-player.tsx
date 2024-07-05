@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   Text,
   Modal,
+  Image,
 } from 'react-native';
-import type { Card, Lottie } from './types';
+import type { Card, Logo, Lottie } from './types';
 import VideoProgressBar from './progressBar';
 import LottiePlayer from './lottie-player';
 import { useZeed } from './ZeedProvider';
@@ -37,6 +38,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   lang,
 }) => {
   const { visible, setVisible, prefetched } = useZeed();
+  const [img, setImg] = useState<Logo | null>();
   const [section1, setSection1] = useState<Card[]>([]);
   const [section2, setSection2] = useState<Card[]>([]);
   const [section3, setSection3] = useState<Card[]>([]);
@@ -193,6 +195,15 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
 
     fetchLottieJson();
   }, [finasset, prefetched, ZeedClient, audio, n_cards, lang]);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const fetchedImg = await ZeedClient?.api?.getZeedStockImage(finasset);
+      setImg(fetchedImg);
+    };
+
+    fetchImage();
+  }, [ZeedClient?.api, finasset]);
 
   // Handle video completion within a section
   const handleVideoComplete = (index: number, section: Card[]): void => {
@@ -354,8 +365,12 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
             onPressOut={handlePlay}
             style={styles.prevSession}
           />
-
           <TouchableOpacity style={styles.companyName} onPress={() => {}}>
+            <Image
+              source={{ uri: img?.logo }}
+              style={styles.image}
+              resizeMode={'contain'}
+            />
             <View style={styles.name}>
               <Text style={styles.subtitle} numberOfLines={1}>
                 {finasset}

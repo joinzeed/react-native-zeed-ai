@@ -1,4 +1,11 @@
-import type { ApiResponse, StoryRequest, Card, SingleLottie } from './types';
+import type {
+  ApiResponse,
+  StoryRequest,
+  Card,
+  SingleLottie,
+  Logo,
+} from './types';
+import type { Translations } from './constants';
 import { DefaultHost } from './constants';
 
 class ApiClient {
@@ -38,7 +45,10 @@ class ApiClient {
     };
 
     try {
-      const response = await fetch(this.apiHost, config);
+      const response = await fetch(
+        this.apiHost + '/visual_story_teller',
+        config
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -88,7 +98,10 @@ class ApiClient {
     };
 
     try {
-      const response = await fetch(this.apiHost, config);
+      const response = await fetch(
+        this.apiHost + '/visual_story_teller',
+        config
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -153,7 +166,7 @@ class ApiClient {
     }
   }
 
-  async getPrefetchedStory(stocklist: string[]) {
+  async getPrefetchedStory(stocklist: string[], lang: keyof Translations) {
     console.log('start prefetch');
     const stories: { [key: string]: Card[] } = {};
 
@@ -161,7 +174,13 @@ class ApiClient {
       // Map each stock item to a promise that fetches its stories
       const promises = stocklist.map(async (item) => {
         try {
-          const storyData = await this.getStories(item, [27, 29], 0, true);
+          const storyData = await this.getStories(
+            item,
+            [27, 29],
+            0,
+            true,
+            lang
+          );
           stories[item] = storyData; // Store fetched stories in the object
         } catch (error) {
           console.error(`Error fetching stories for ${item}:`, error);
@@ -176,6 +195,49 @@ class ApiClient {
     } catch (error) {
       console.error('Error in getPrefetchedStory:', error);
       return null; // Handle any unexpected errors
+    }
+  }
+
+  // Method to get a single stock image from the API
+  async getZeedStockImage(finasset: string): Promise<Logo | null> {
+    // Ensure the API key is provided
+    if (!this.apiKey) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
+      );
+    }
+    const params = new URLSearchParams({ stock_tickers: finasset });
+
+    const config: RequestInit = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.apiKey,
+      },
+    };
+
+    try {
+      const response = await fetch(
+        `${this.apiHost}/logos/stock?${params.toString()}`,
+        config
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const logoList = JSON.parse(data?.data?.body);
+      if (logoList && logoList.length > 0) {
+        const image = {
+          logo: logoList[0]?.image_url,
+          blurhash: logoList[0]?.blurhash,
+        };
+        return image;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('getZeedStockImage error', error);
+      throw error;
     }
   }
 }

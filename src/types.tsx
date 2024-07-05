@@ -81,3 +81,8 @@ export type Render = {
   lottie: SingleLottie;
   bg_color: string;
 };
+
+export type Logo = {
+  logo: string;
+  blurhash: string;
+};

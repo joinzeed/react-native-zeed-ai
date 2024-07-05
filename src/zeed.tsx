@@ -6,12 +6,18 @@ import type { Translations } from './constants';
 class Zeed {
   api?: ApiClient;
   apiKey?: string;
-
+  lang!: keyof Translations;
   // Minimal initialization that is expected to be called on app boot
-  init = ({ apiKey }: { apiKey: string }) => {
+  init = ({ apiKey, lang }: { apiKey: string; lang: keyof Translations }) => {
     this.apiKey = apiKey;
     this.api = new ApiClient(apiKey); // Initialize the ApiClient with the apiKey
+    this.lang = lang;
   };
+
+  changeLang = ({ lang }: { lang: keyof Translations }) => {
+    this.lang = lang;
+  };
+
   // Method to call getStories from ApiClient
   async story(
     finasset: string,
@@ -30,8 +36,7 @@ class Zeed {
 
   async getStoryCard(
     finasset: string,
-    audio: boolean = false,
-    lang: keyof Translations
+    audio: boolean = false
   ): Promise<JSX.Element | null> {
     try {
       return (
@@ -40,7 +45,7 @@ class Zeed {
           finasset={finasset}
           n_cards={0}
           audio={audio}
-          lang={lang}
+          lang={this.lang}
         />
       );
     } catch (error) {
@@ -68,7 +73,10 @@ class Zeed {
     }
 
     try {
-      const prefetchedData = await this.api.getPrefetchedStory(stocklist);
+      const prefetchedData = await this.api.getPrefetchedStory(
+        stocklist,
+        this.lang
+      );
       setPrefetched(prefetchedData || {});
     } catch (error) {
       console.error('Error prefetching stories:', error);
