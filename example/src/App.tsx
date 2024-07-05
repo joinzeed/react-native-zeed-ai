@@ -14,11 +14,11 @@ export default function App() {
 }
 const StoryGenerator = () => {
   const [storyCard, setStoryCard] = useState<JSX.Element | null>(null);
-  const { visible, setVisible, setPrefetched } = useZeed();
+  const { visible, setVisible, setPrefetched, prefetched } = useZeed();
 
   useEffect(() => {
-    Zeed.prefetchStory(setPrefetched).catch(console.error);
-  }, [setPrefetched]);
+    Zeed.prefetchStory(prefetched, setPrefetched).catch(console.error);
+  }, [prefetched, setPrefetched]);
 
   useEffect(() => {
     if (!visible) {

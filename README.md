@@ -116,14 +116,14 @@ The `prefetchStory` method allows you to fetch and store story data for a predef
 ```javascript
 import { useZeed } from 'react-native-zeed-ai';
 
-const { setPrefetched } = useZeed();
+const { prefetched, setPrefetched } = useZeed();
 ```
 
 2. Call the prefetchStory Method: You can call this method at an appropriate time in your application flow.
 
 ```javascript
 useEffect(() => {
-  Zeed.prefetchStory(setPrefetched).catch(console.error);
+  Zeed.prefetchStory(prefetched, setPrefetched).catch(console.error);
 }, [setPrefetched]);
 ```
 
@@ -131,7 +131,7 @@ By default, prefetchStory uses a predefined list of popular stocks (AMZN, MSFT, 
 
 ```javascript
 const customStockList = ['BABA', 'NFLX', 'SPOT'];
-Zeed.prefetchStory(setPrefetchedData, customStockList);
+Zeed.prefetchStory(prefetched, setPrefetchedData, customStockList);
 ```
 
 ## Change Language

@@ -55,6 +55,7 @@ class Zeed {
   }
 
   prefetchStory = async (
+    prefetched: { [key: string]: Card[] } | undefined,
     setPrefetched: Function,
     stocklist: string[] = [
       'AMZN',
@@ -71,13 +72,18 @@ class Zeed {
         'Zeed API client not initialized. Call init() before using other methods.'
       );
     }
-
     try {
+      if (prefetched) {
+        stocklist = stocklist.filter((stock) => !(stock in prefetched));
+      }
       const prefetchedData = await this.api.getPrefetchedStory(
         stocklist,
         this.lang
       );
-      setPrefetched(prefetchedData || {});
+      setPrefetched((prevStories: { [key: string]: Card[] }) => ({
+        ...prevStories,
+        ...prefetchedData,
+      }));
     } catch (error) {
       console.error('Error prefetching stories:', error);
     }
