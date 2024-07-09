@@ -89,7 +89,7 @@ export type Logo = {
 };
 
 export type Information = {
-  [ticker: string]: { arguments: StoryRequest; name: keyof LanguageType } | {};
+  [ticker: string]: { [sectionName: string]: SectionInfo } | {};
 };
 
 export const Language: LanguageType = {
@@ -117,3 +117,8 @@ export interface Translations {
   es: string;
   ar: string;
 }
+
+export type SectionInfo = {
+  arguments: StoryRequest;
+  name: keyof LanguageType;
+};

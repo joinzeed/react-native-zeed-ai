@@ -45,6 +45,7 @@ class Zeed {
 
   async getStoryCard(
     finasset: string,
+    onPress: () => void,
     audio: boolean = false
   ): Promise<JSX.Element | null> {
     try {
@@ -54,6 +55,7 @@ class Zeed {
           finasset={finasset}
           audio={audio}
           lang={this.lang}
+          onPress={onPress}
         />
       );
     } catch (error) {

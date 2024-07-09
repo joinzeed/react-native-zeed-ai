@@ -15,6 +15,8 @@ import type {
   LanguageType,
   Translations,
   StoryRequest,
+  Information,
+  SectionInfo,
 } from './types';
 import { Language } from './types';
 import VideoProgressBar from './progressBar';
@@ -28,6 +30,7 @@ interface CardPlayerProps {
   fixed?: string;
   audio: boolean;
   lang: keyof Translations;
+  onPress: () => void;
 }
 interface Section {
   text: string;
@@ -39,6 +42,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   finasset,
   audio,
   lang,
+  onPress,
 }) => {
   const { visible, setVisible, prefetched, setPrefetched } = useZeed();
   const [img, setImg] = useState<Logo | null>();
@@ -251,7 +255,81 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
       if (prefetched && prefetched[finasset]) {
         fetchLottieJson();
       } else {
-        await ZeedClient.prefetchStory(prefetched, setPrefetched, [finasset]);
+        let sections = [];
+        const information: Information | undefined =
+          await ZeedClient?.api?.getSectionInformation([finasset], lang);
+        const sectionInformation:
+          | { [sectionName: string]: SectionInfo }
+          | undefined = information ? information[finasset] : {};
+        for (const key in sectionInformation) {
+          const section = sectionInformation[key];
+          const sectionText =
+            Language[
+              (section as { name?: keyof LanguageType })
+                ?.name as keyof LanguageType
+            ]?.[lang as keyof Translations];
+          if (sectionText) {
+            sections.push({
+              text: sectionText,
+              cards: null,
+            });
+          }
+        }
+        setVideoSections(sections);
+        // Create promises for fetching card data
+        let promises = [];
+        for (const key in sectionInformation) {
+          const section = sectionInformation[key];
+          const sectionName = (section as { name?: keyof LanguageType })?.name;
+          const args = (section as { arguments?: StoryRequest })?.arguments;
+
+          let promise;
+          switch (args?.action) {
+            case 'generate':
+              promise = ZeedClient.story(
+                args.source_ticker,
+                args.fixed,
+                0,
+                audio,
+                args.lang
+              );
+              break;
+            case 'earning':
+              promise = ZeedClient.earning(args.source_ticker);
+              break;
+            default:
+              console.log(`No valid action found for ${section}`);
+              continue;
+          }
+
+          promises.push(
+            promise
+              .then((result) => {
+                return { key: sectionName, result };
+              })
+              .catch((error) => {
+                console.error(`Error processing ${section}:`, error);
+                return { key: sectionName, result: [] }; // Return empty result to handle error case
+              })
+          );
+        }
+
+        // Process results and update sections with cards
+        const results = await Promise.all(promises);
+        setVideoSections((prevSections) => {
+          return prevSections.map((section) => {
+            const result = results.find(
+              (res) =>
+                Language[res.key as keyof LanguageType]?.[
+                  lang as keyof Translations
+                ] === section.text
+            );
+            if (result) {
+              return { ...section, cards: result.result };
+            }
+            return section;
+          });
+        });
       }
     };
 
@@ -425,7 +503,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
             onPressOut={handlePlay}
             style={styles.prevSession}
           />
-          <TouchableOpacity style={styles.companyName} onPress={() => {}}>
+          <TouchableOpacity style={styles.companyName} onPress={onPress}>
             <Image
               source={{ uri: img?.logo }}
               style={styles.image}

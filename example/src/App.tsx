@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Button } from 'react-native';
+import { StyleSheet, View, Button, Alert } from 'react-native';
 import { Zeed, ZeedProvider, useZeed } from 'react-native-zeed-ai';
 
 export default function App() {
@@ -28,8 +28,11 @@ const StoryGenerator = () => {
 
   const generateStory = useCallback(
     async (symbol: string) => {
+      const onPress = () => {
+        Alert.alert('Button Pressed', 'The button has been pressed.');
+      };
       try {
-        const card = await Zeed.getStoryCard(symbol, false);
+        const card = await Zeed.getStoryCard(symbol, onPress, false);
         setStoryCard(card);
         setVisible(true);
       } catch (error) {
