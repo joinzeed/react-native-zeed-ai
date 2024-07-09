@@ -6,7 +6,13 @@ import React, {
   useCallback,
   useState,
 } from 'react';
-import { View, AppState, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  AppState,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import type { ViewStyle, DimensionValue } from 'react-native';
 import WebView from 'react-native-webview';
 import type { Lottie } from './types';
@@ -82,7 +88,7 @@ export const LottiePlayer = forwardRef(
     }));
 
     useEffect(() => {
-      if (Object.keys(lottie).length === 0) {
+      if (!lottie || Object.keys(lottie).length === 0) {
         return;
       }
       play();
@@ -103,6 +109,14 @@ export const LottiePlayer = forwardRef(
         subscription.remove();
       };
     }, [lottie, pause, play]);
+
+    if (!lottie) {
+      return (
+        <View style={styles.spinner}>
+          <ActivityIndicator size="large" color="gray" />
+        </View>
+      );
+    }
 
     if (Object.keys(lottie).length === 0) {
       return (
@@ -219,6 +233,12 @@ const styles = StyleSheet.create({
   web: {
     position: 'relative',
     flex: 1,
+  },
+  spinner: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2f2f2f',
   },
 });
 

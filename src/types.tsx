@@ -33,7 +33,8 @@ export type Lottie =
       assets: Asset[]; // Array of assets used in the animation
       layers: Layer[]; // Array of animation layers
     }
-  | {};
+  | {}
+  | null;
 
 export type Asset = {
   id: string; // Asset identifier

@@ -12,7 +12,6 @@ import {
 import type {
   Card,
   Logo,
-  Lottie,
   LanguageType,
   Translations,
   StoryRequest,
@@ -32,7 +31,7 @@ interface CardPlayerProps {
 }
 interface Section {
   text: string;
-  cards: Card[];
+  cards: Card[] | null;
 }
 
 const CardPlayer: React.FC<CardPlayerProps> = ({
@@ -180,7 +179,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
           if (sectionText) {
             sections.push({
               text: sectionText,
-              cards: [],
+              cards: null,
             });
           }
         }
@@ -394,18 +393,17 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
               ))}
             </View>
           </View>
-
           <LottiePlayer
             ref={lottiePlayerRef}
             lottie={
-              videoSections[currentSection]?.cards.length === 0
-                ? ({} as Lottie)
-                : videoSections[currentSection]?.cards[
+              videoSections[currentSection]?.cards
+                ? videoSections[currentSection]?.cards?.[
                     currIndices[currentSection] ?? 0
-                  ]?.render?.lottie ?? ({} as Lottie)
+                  ]?.render.lottie || {}
+                : null
             }
             bg_color={
-              videoSections[currentSection]?.cards[
+              videoSections[currentSection]?.cards?.[
                 currIndices[currentSection] ?? 0
               ]?.render?.bg_color ?? ''
             }
