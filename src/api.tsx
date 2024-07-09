@@ -4,8 +4,9 @@ import type {
   Card,
   SingleLottie,
   Logo,
+  Information,
 } from './types';
-import type { Translations } from './constants';
+import type { Translations } from './types';
 import { DefaultHost } from './constants';
 
 class ApiClient {
@@ -137,7 +138,7 @@ class ApiClient {
     fixed: number[],
     n_cards: number,
     audio: boolean = false,
-    lang: string = 'en'
+    lang: keyof Translations
   ): Promise<Card[]> {
     const requestData: StoryRequest = {
       action: 'generate',
@@ -166,11 +167,102 @@ class ApiClient {
     }
   }
 
-  async getPrefetchedStory(stocklist: string[], lang: keyof Translations) {
-    console.log('start prefetch');
-    const stories: { [key: string]: Card[] } = {};
+  async getEarning(finasset: string): Promise<Card[]> {
+    if (!this.apiKey) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
+      );
+    }
+
+    const config: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.apiKey,
+      },
+      body: JSON.stringify({
+        action: 'earning',
+        source_ticker: finasset,
+      }),
+    };
 
     try {
+      const response = await fetch(
+        this.apiHost + '/visual_story_teller',
+        config
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (!data.cards) {
+        console.error('No earnings cards found in the API response');
+        return [];
+      }
+      const filtered = (data.cards as Card[])
+        .filter((item) => item?.render)
+        .map((item) => ({
+          render: item.render,
+          request: item.request,
+        }));
+      return filtered;
+    } catch (error) {
+      console.error('Error in getEarning', error);
+      return [];
+    }
+  }
+
+  async getSectionInformation(
+    stocklist: string[],
+    lang: keyof Translations
+  ): Promise<Information> {
+    if (!this.apiKey) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
+      );
+    }
+
+    const config: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.apiKey,
+      },
+      body: JSON.stringify({
+        action: 'prefetch',
+        tickers: stocklist,
+        lang: lang,
+      }),
+    };
+
+    try {
+      const response = await fetch(
+        this.apiHost + '/visual_story_teller',
+        config
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (!data) {
+        console.error('No Information found in the API response', config.body);
+        return { Information: {} };
+      }
+      return data as Information;
+    } catch (error) {
+      console.error('Error in getSectionInformation', error);
+      return { Information: {} };
+    }
+  }
+
+  async getPrefetchedStory(stocklist: string[], lang: keyof Translations) {
+    console.log('start prefetch');
+    const stories: {
+      [key: string]: { information: Information; stories: Card[] };
+    } = {};
+
+    try {
+      const information = await this.getSectionInformation(stocklist, lang);
       // Map each stock item to a promise that fetches its stories
       const promises = stocklist.map(async (item) => {
         try {
@@ -181,10 +273,16 @@ class ApiClient {
             true,
             lang
           );
-          stories[item] = storyData; // Store fetched stories in the object
+          stories[item] = {
+            information: information[item] || {},
+            stories: storyData,
+          };
         } catch (error) {
           console.error(`Error fetching stories for ${item}:`, error);
-          stories[item] = []; // Handle error case by assigning empty array
+          stories[item] = {
+            information: information[item] || {},
+            stories: [],
+          };
         }
       });
 

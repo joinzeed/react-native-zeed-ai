@@ -61,9 +61,9 @@ export type StoryRequest = {
   source_ticker: string;
   n_cards: number;
   audio: boolean;
-  lang: string;
+  lang: keyof Translations;
+  tickers?: string[];
 };
-
 export type Card = {
   render: Render;
   request: Record<string, unknown>;
@@ -86,3 +86,33 @@ export type Logo = {
   logo: string;
   blurhash: string;
 };
+
+export type Information = {
+  [ticker: string]: { arguments: StoryRequest; name: keyof LanguageType } | {};
+};
+
+export const Language: LanguageType = {
+  Performance: { en: 'Performance', es: 'Actuación', ar: 'أداء' },
+  Industry: { en: 'Industry', es: 'Industria', ar: 'صناعة' },
+  Ratings: { en: 'Ratings', es: 'Calificaciones', ar: 'التقييمات' },
+  Financials: { en: 'Financials', es: 'Finanzas', ar: 'المالية' },
+  Earnings_Recap: {
+    en: 'Earnings Recap',
+    es: 'Resumen de ganancias',
+    ar: 'خلاصة الكسب',
+  },
+};
+
+export interface LanguageType {
+  Performance: Translations;
+  Industry: Translations;
+  Ratings: Translations;
+  Financials: Translations;
+  Earnings_Recap: Translations;
+}
+
+export interface Translations {
+  en: string;
+  es: string;
+  ar: string;
+}

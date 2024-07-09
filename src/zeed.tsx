@@ -1,8 +1,7 @@
 import ApiClient from './api';
-import type { Card } from './types';
+import type { Card, Information, Translations } from './types';
 import CardPlayer from './card-player';
 import React from 'react';
-import type { Translations } from './constants';
 class Zeed {
   api?: ApiClient;
   apiKey?: string;
@@ -34,6 +33,16 @@ class Zeed {
     return this.api.getStories(finasset, fixed, n_cards, audio, lang);
   }
 
+  // Method to call getEarning from ApiClient
+  async earning(finasset: string): Promise<Card[]> {
+    if (!this.api) {
+      throw new Error(
+        'Zeed API client not initialized. Call init() before using other methods.'
+      );
+    }
+    return this.api.getEarning(finasset);
+  }
+
   async getStoryCard(
     finasset: string,
     audio: boolean = false
@@ -43,7 +52,6 @@ class Zeed {
         <CardPlayer
           ZeedClient={this}
           finasset={finasset}
-          n_cards={0}
           audio={audio}
           lang={this.lang}
         />
@@ -55,7 +63,9 @@ class Zeed {
   }
 
   prefetchStory = async (
-    prefetched: { [key: string]: Card[] } | undefined,
+    prefetched:
+      | { [key: string]: { information: Information; stories: Card[] } }
+      | undefined,
     setPrefetched: Function,
     stocklist: string[] = [
       'AMZN',
@@ -76,14 +86,20 @@ class Zeed {
       if (prefetched) {
         stocklist = stocklist.filter((stock) => !(stock in prefetched));
       }
-      const prefetchedData = await this.api.getPrefetchedStory(
-        stocklist,
-        this.lang
-      );
-      setPrefetched((prevStories: { [key: string]: Card[] }) => ({
-        ...prevStories,
-        ...prefetchedData,
-      }));
+      if (stocklist.length > 0) {
+        const prefetchedData = await this.api.getPrefetchedStory(
+          stocklist,
+          this.lang
+        );
+        setPrefetched(
+          (prevStories: {
+            [key: string]: { information: Information; stories: Card[] };
+          }) => ({
+            ...prevStories,
+            ...prefetchedData,
+          })
+        );
+      }
     } catch (error) {
       console.error('Error prefetching stories:', error);
     }

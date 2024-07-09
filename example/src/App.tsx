@@ -41,9 +41,9 @@ const StoryGenerator = () => {
   return (
     <>
       <Button
-        title="Generate Story for AMZN"
+        title="Generate Story for PDD"
         color="red"
-        onPress={() => generateStory('AMZN')}
+        onPress={() => generateStory('PDD')}
       />
       <Button
         title="Generate Story for TSLA"

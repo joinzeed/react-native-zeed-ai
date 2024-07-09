@@ -139,5 +139,5 @@ Zeed.prefetchStory(prefetched, setPrefetchedData, customStockList);
 You can easily change the story language with the following function:
 
 ```javascript
-zeed.changeLang({ lang: 'es' });
+Zeed.changeLang({ lang: 'es' });
 ```

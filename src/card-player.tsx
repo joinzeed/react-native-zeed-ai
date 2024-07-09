@@ -9,19 +9,24 @@ import {
   Modal,
   Image,
 } from 'react-native';
-import type { Card, Logo, Lottie } from './types';
+import type {
+  Card,
+  Logo,
+  Lottie,
+  LanguageType,
+  Translations,
+  StoryRequest,
+} from './types';
+import { Language } from './types';
 import VideoProgressBar from './progressBar';
 import LottiePlayer from './lottie-player';
 import { useZeed } from './ZeedProvider';
 import Zeed from './zeed';
-import { Language } from './constants';
-import type { Translations } from './constants';
 
 interface CardPlayerProps {
   ZeedClient: typeof Zeed;
   finasset: string;
   fixed?: string;
-  n_cards: number;
   audio: boolean;
   lang: keyof Translations;
 }
@@ -33,29 +38,17 @@ interface Section {
 const CardPlayer: React.FC<CardPlayerProps> = ({
   ZeedClient,
   finasset,
-  n_cards,
   audio,
   lang,
 }) => {
-  const { visible, setVisible, prefetched } = useZeed();
+  const { visible, setVisible, prefetched, setPrefetched } = useZeed();
   const [img, setImg] = useState<Logo | null>();
-  const [section1, setSection1] = useState<Card[]>([]);
-  const [section2, setSection2] = useState<Card[]>([]);
-  const [section3, setSection3] = useState<Card[]>([]);
-  const [section4, setSection4] = useState<Card[]>([]);
   const [currIndices, setCurrIndices] = useState<number[]>([0, 0, 0, 0]);
   const [currentSection, setCurrentSection] = useState<number>(0);
   const progressBarRefs = useRef<Array<any>>([]);
   const lottiePlayerRef = useRef<any>(null);
   const { width } = Dimensions.get('window');
-  const videoSections: Section[] = [
-    { text: Language.Performance[lang], cards: section1 },
-    { text: Language.Industry[lang], cards: section2 },
-    { text: Language.Ratings[lang], cards: section3 },
-    { text: Language.Financials[lang], cards: section4 },
-  ];
-  const sectionNumber = videoSections.length;
-
+  const [videoSections, setVideoSections] = useState<Section[]>([]);
   // PanResponder to handle swiping between sections
   const panResponder = useRef(
     PanResponder.create({
@@ -69,14 +62,14 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
           const newSection =
             dx > 0
               ? Math.max(prevSection - 1, 0)
-              : Math.min(prevSection + 1, sectionNumber - 1);
+              : Math.min(prevSection + 1, videoSections.length - 1);
 
           if (prevSection !== newSection) {
             progressBarRefs.current[prevSection]?.reset();
           }
           return newSection;
         });
-        setCurrIndices([0, 0, 0, 0]);
+        setCurrIndices(currIndices.map(() => 0));
       },
     })
   ).current;
@@ -156,45 +149,115 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
     },
   });
 
-  // Fetch data when component mounts
   useEffect(() => {
     const fetchLottieJson = async () => {
       try {
-        let data;
-        if (prefetched && prefetched[finasset]) {
-          data = prefetched[finasset];
-        } else {
-          data = await ZeedClient.story(
-            finasset,
-            [27, 29],
-            n_cards,
-            audio,
-            lang
+        let sections = [];
+        const data = prefetched?.[finasset] || { information: {}, stories: [] };
+
+        // Collect and set all texts first
+        if (
+          data.stories.length > 0 &&
+          (data.information.section1 as { name: keyof LanguageType })?.name
+        ) {
+          const sectionName = (
+            data.information.section1 as { name: keyof LanguageType }
+          )?.name;
+          sections.push({
+            text: Language[sectionName][lang as keyof Translations],
+            cards: data.stories,
+          });
+        }
+
+        for (const key in data.information) {
+          if (key === 'section1') continue;
+          const section = data.information[key];
+          const sectionText =
+            Language[
+              (section as { name?: keyof LanguageType })
+                ?.name as keyof LanguageType
+            ]?.[lang as keyof Translations];
+          if (sectionText) {
+            sections.push({
+              text: sectionText,
+              cards: [],
+            });
+          }
+        }
+
+        // Set initial sections with texts
+        setVideoSections(sections);
+
+        // Create promises for fetching card data
+        let promises = [];
+        for (const key in data.information) {
+          if (key === 'section1') continue;
+          const section = data.information[key];
+          const sectionName = (section as { name?: keyof LanguageType })?.name;
+          const args = (section as { arguments?: StoryRequest })?.arguments;
+
+          let promise;
+          switch (args?.action) {
+            case 'generate':
+              promise = ZeedClient.story(
+                args.source_ticker,
+                args.fixed,
+                0,
+                audio,
+                args.lang
+              );
+              break;
+            case 'earning':
+              promise = ZeedClient.earning(args.source_ticker);
+              break;
+            default:
+              console.log(`No valid action found for ${section}`);
+              continue;
+          }
+
+          promises.push(
+            promise
+              .then((result) => {
+                return { key: sectionName, result };
+              })
+              .catch((error) => {
+                console.error(`Error processing ${section}:`, error);
+                return { key: sectionName, result: [] }; // Return empty result to handle error case
+              })
           );
         }
-        if (data && data.length > 0) {
-          setSection1(data);
-          const promises = [
-            ZeedClient.story(finasset, [7, 1, 14, 19], 0, audio, lang)
-              .then(setSection2)
-              .catch((err) => console.error('Error in section 2:', err)),
-            ZeedClient.story(finasset, [26], 0, audio, lang)
-              .then(setSection3)
-              .catch((err) => console.error('Error in section 3:', err)),
-            ZeedClient.story(finasset, [30], 0, audio, lang)
-              .then(setSection4)
-              .catch((err) => console.error('Error in section 4:', err)),
-          ];
 
-          await Promise.all(promises);
-        }
+        // Process results and update sections with cards
+        const results = await Promise.all(promises);
+        setVideoSections((prevSections) => {
+          return prevSections.map((section) => {
+            const result = results.find(
+              (res) =>
+                Language[res.key as keyof LanguageType]?.[
+                  lang as keyof Translations
+                ] === section.text
+            );
+            if (result) {
+              return { ...section, cards: result.result };
+            }
+            return section;
+          });
+        });
       } catch (error) {
-        console.error('Error fetching stories:', error);
+        console.error('Error fetching Lottie JSON:', error);
       }
     };
 
-    fetchLottieJson();
-  }, [finasset, prefetched, ZeedClient, audio, n_cards, lang]);
+    const fetchData = async () => {
+      if (prefetched && prefetched[finasset]) {
+        fetchLottieJson();
+      } else {
+        await ZeedClient.prefetchStory(prefetched, setPrefetched, [finasset]);
+      }
+    };
+
+    fetchData();
+  }, [finasset, prefetched, setPrefetched, ZeedClient, audio, lang]);
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -232,12 +295,12 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
     let nextSection = currentSection;
 
     if (nextIndex >= sectionLength) {
-      nextSection = Math.min(currentSection + 1, sectionNumber - 1);
+      nextSection = Math.min(currentSection + 1, videoSections.length - 1);
       nextIndex = 0;
 
       if (
-        nextSection === sectionNumber - 1 &&
-        currentSection + 1 > sectionNumber - 1
+        nextSection === videoSections.length - 1 &&
+        currentSection + 1 > videoSections.length - 1
       ) {
         const nextSectionLottieLength =
           videoSections[nextSection]?.cards?.length;
@@ -288,7 +351,6 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
 
     setCurrIndices(updatedIndices);
   };
-
   // Functions to handle play and pause
   const handlePause = () => {
     lottiePlayerRef.current?.pause();
@@ -300,7 +362,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
     progressBarRefs.current?.[currentSection]?.play();
   };
 
-  if (section1.length > 0) {
+  if (videoSections.length > 0) {
     return (
       <Modal
         presentationStyle="pageSheet"
