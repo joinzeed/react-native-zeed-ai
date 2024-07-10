@@ -178,7 +178,9 @@ const VideoProgressBar = forwardRef<
   if (!videos || videos.length === 0) {
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionName}>{text}</Text>
+        <Text numberOfLines={1} style={styles.text}>
+          {text}
+        </Text>
         <View style={styles.container}>
           <View style={styles.section}>
             <View style={[styles.bar, styles.filledWidthBar]} />

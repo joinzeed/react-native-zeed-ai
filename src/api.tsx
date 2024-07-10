@@ -215,7 +215,7 @@ class ApiClient {
   async getSectionInformation(
     stocklist: string[],
     lang: keyof Translations
-  ): Promise<Information> {
+  ): Promise<{ [ticker: string]: Information }> {
     if (!this.apiKey) {
       throw new Error(
         'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'

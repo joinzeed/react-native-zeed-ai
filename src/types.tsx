@@ -1,3 +1,5 @@
+import Zeed from './zeed';
+
 export type PresentationStyle =
   | 'fullScreen'
   | 'pageSheet'
@@ -88,9 +90,7 @@ export type Logo = {
   blurhash: string;
 };
 
-export type Information = {
-  [ticker: string]: { [sectionName: string]: SectionInfo } | {};
-};
+export type Information = { [sectionName: string]: SectionInfo } | {};
 
 export const Language: LanguageType = {
   Performance: { en: 'Performance', es: 'Actuación', ar: 'أداء' },
@@ -122,3 +122,16 @@ export type SectionInfo = {
   arguments: StoryRequest;
   name: keyof LanguageType;
 };
+
+export interface CardPlayerProps {
+  ZeedClient: typeof Zeed;
+  finasset: string;
+  fixed?: string;
+  audio: boolean;
+  lang: keyof Translations;
+  onPress: () => void;
+}
+export interface Section {
+  text: string;
+  cards: Card[] | null;
+}
