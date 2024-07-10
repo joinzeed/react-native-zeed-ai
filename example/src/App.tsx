@@ -16,9 +16,7 @@ const StoryGenerator = () => {
   const [storyCard, setStoryCard] = useState<JSX.Element | null>(null);
   const { visible, setVisible, setPrefetched, prefetched } = useZeed();
 
-  useEffect(() => {
-    Zeed.prefetchStory(prefetched, setPrefetched).catch(console.error);
-  }, [prefetched, setPrefetched]);
+  Zeed.prefetchStory(prefetched, setPrefetched).catch(console.error);
 
   useEffect(() => {
     if (!visible) {
@@ -32,7 +30,7 @@ const StoryGenerator = () => {
         Alert.alert('Button Pressed', 'The button has been pressed.');
       };
       try {
-        const card = await Zeed.getStoryCard(symbol, onPress, false);
+        const card = await Zeed.getStoryCard(symbol, false, onPress);
         setStoryCard(card);
         setVisible(true);
       } catch (error) {

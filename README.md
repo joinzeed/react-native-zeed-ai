@@ -56,11 +56,14 @@ To use `react-native-zeed-ai`, you need to initialize it with an API key, wrap y
 ### Generating Stories
 
 Implement a button or any trigger in your components to generate and display
-stories based on a given symbol.
+stories based on a given symbol. The `Zeed.getStoryCard` function is used to generate a story card. It takes three parameters:
+`finasset`: The financial asset symbol (e.g., 'PDD', 'TSLA').
+`audio`: A boolean indicating whether to include audio. Default is false.
+`onPress`: A callback function that executes when the card is pressed. Default is an empty function.
 
 ```javascript
 import React, { useState, useCallback } from 'react';
-import { View, Button } from 'react-native';
+import { View, Button, Alert } from 'react-native';
 import { useZeed } from 'react-native-zeed-ai';
 
 const StoryGenerator = () => {
@@ -68,9 +71,12 @@ const StoryGenerator = () => {
   const { setVisible } = useZeed();
 
   const generateStory = useCallback(
-    async (symbol) => {
+    async (symbol: string) => {
+      const onPress = () => {
+        Alert.alert('Button Pressed', 'The button has been pressed.');
+      };
       try {
-        const card = await Zeed.getStoryCard(symbol);
+        const card = await Zeed.getStoryCard(symbol, false, onPress);
         setStoryCard(card);
         setVisible(true);
       } catch (error) {
@@ -122,9 +128,7 @@ const { prefetched, setPrefetched } = useZeed();
 2. Call the prefetchStory Method: You can call this method at an appropriate time in your application flow.
 
 ```javascript
-useEffect(() => {
-  Zeed.prefetchStory(prefetched, setPrefetched).catch(console.error);
-}, [setPrefetched]);
+Zeed.prefetchStory(prefetched, setPrefetched).catch(console.error);
 ```
 
 By default, prefetchStory uses a predefined list of popular stocks (AMZN, MSFT, TSLA, etc.). If you want to use a custom list, pass your list of assets as a second argument:

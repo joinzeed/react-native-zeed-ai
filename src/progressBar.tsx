@@ -189,7 +189,9 @@ const VideoProgressBar = forwardRef<
   }
   return (
     <View style={styles.column}>
-      <Text style={styles.text}>{text}</Text>
+      <Text numberOfLines={1} style={styles.text}>
+        {text}
+      </Text>
       <View style={styles.container}>
         {sectionShown ? (
           videos.map((_, index) => {
