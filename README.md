@@ -20,12 +20,36 @@ With npm
 ```bash
 npm install react-native-zeed-ai
 ```
+**Install peer dependencies**
+We rely on two peer dependencies, if you already have it in your app you can skip this step.
 
+`expo` - used to manage the audio in the lottie
+`react-native-webview` - used to display the lottie
+
+To install and use Expo modules, the easiest way to get up and running is with the `install-expo-modules` command. Or if you want to install it manually, please refer to [Expo document](https://docs.expo.dev/bare/installing-expo-modules/).
+```bash
+npx install-expo-modules@latest
+```
+To install react-native-webview:
+With yarn
+
+```bash
+yarn add react-native-webview
+```
+
+With npm
+
+```bash
+npm install react-native-webview
+```
 ## Usage
 
 To use `react-native-zeed-ai`, you need to initialize it with an API key, wrap your application components with `ZeedProvider`, and then use the hooks and components provided by the package to generate and display story content.
-
+Install peer dependencies
 ### Basic Setup
+We rely on only two peer dependencies, if you already have it in your app you can skip this step.
+react-native-webview - used to display the lottie
+expo - to manage the audio inside the lottie
 
 1. Initialize Zeed AI:
 
