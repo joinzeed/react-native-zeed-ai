@@ -1,4 +1,4 @@
-import React, {
+import {
   useRef,
   forwardRef,
   useImperativeHandle,
@@ -13,7 +13,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import type { ViewStyle, DimensionValue } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import WebView from 'react-native-webview';
 import type { Lottie } from './types';
 
@@ -26,7 +26,7 @@ export const LottiePlayer = forwardRef(
     }: {
       lottie: Lottie;
       bg_color?: string;
-      width?: DimensionValue | undefined;
+      width?: number | string | undefined;
     },
     parentRef
   ) => {

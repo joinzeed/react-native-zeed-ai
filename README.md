@@ -4,8 +4,8 @@
 
 ## Platforms Supported
 
-- [x] IOS
-- [x] Android
+-  ✅  IOS
+-  ✅  Android
 
 ## Installation
 
@@ -18,7 +18,7 @@ yarn add react-native-zeed-ai
 With npm
 
 ```bash
-npm install react-native-zeed-ai
+npm install --save react-native-zeed-ai
 ```
 **Install peer dependencies**
 We rely on two peer dependencies, if you already have it in your app you can skip this step.
@@ -40,8 +40,16 @@ yarn add react-native-webview
 With npm
 
 ```bash
-npm install react-native-webview
+npm install --save react-native-webview
 ```
+
+**Install Install pods**
+For iOS you need to run pod install to complete the installation. Within the `ios` library of your app, run the following
+```bash
+npm pod install
+```
+
+
 ## Usage
 
 To use `react-native-zeed-ai`, you need to initialize it with an API key, wrap your application components with `ZeedProvider`, and then use the hooks and components provided by the package to generate and display story content.
