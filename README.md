@@ -31,10 +31,11 @@ To install and use Expo modules, the easiest way to get up and running is with t
 npx install-expo-modules@latest
 ```
 To install react-native-webview:
+
 With yarn
 
 ```bash
-yarn add react-native-webview
+yarn add react-native-webview@12.4.0
 ```
 
 With npm
@@ -44,9 +45,10 @@ npm install --save react-native-webview
 ```
 
 **Install Install pods**
+
 For iOS you need to run pod install to complete the installation. Within the `ios` library of your app, run the following
 ```bash
-npm pod install
+pod install
 ```
 
 

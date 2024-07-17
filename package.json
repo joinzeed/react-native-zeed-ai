@@ -1,7 +1,7 @@
 {
   "name": "react-native-zeed-ai",
-  "version": "0.1.0",
-  "description": "This package is used to access the zeed AI story.",
+  "version": "1.0.0",
+  "description": "Zeed AI Stories SDK for React Native.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "types": "lib/typescript/src/index.d.ts",
@@ -41,14 +41,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TyouzichaT/react-native-zeed-ai.git"
+    "url": "git+https://github.com/joinzeed/react-native-zeed-ai.git"
   },
   "author": "TyouzichaT <zuoyou1998@gmail.com> (https://github.com/TyouzichaT)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TyouzichaT/react-native-zeed-ai/issues"
+    "url": "https://github.com/joinzeed/react-native-zeed-ai/issues"
   },
-  "homepage": "https://github.com/TyouzichaT/react-native-zeed-ai#readme",
+  "homepage": "https://github.com/joinzeed/react-native-zeed-ai#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

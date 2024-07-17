@@ -3,7 +3,7 @@ import { StyleSheet, View, Button, Alert } from 'react-native';
 import { Zeed, ZeedProvider, useZeed } from 'react-native-zeed-ai';
 
 export default function App() {
-  Zeed.init({ apiKey: 'v4GuVSoX211nsxdDBa8VN1O3MMY0jXYB4kGDsytN', lang: 'es' });
+  Zeed.init({ apiKey: 'YOUR_API_KEY', lang: 'es' });
   return (
     <ZeedProvider>
       <View style={styles.container}>
@@ -30,7 +30,7 @@ const StoryGenerator = () => {
         Alert.alert('Button Pressed', 'The button has been pressed.');
       };
       try {
-        const card = await Zeed.getStoryCard(symbol, false, onPress);
+        const card = await Zeed.getStoryCard(symbol, true, onPress);
         setStoryCard(card);
         setVisible(true);
       } catch (error) {
@@ -42,9 +42,9 @@ const StoryGenerator = () => {
   return (
     <>
       <Button
-        title="Generate Story for PDD"
+        title="Generate Story for AAPL"
         color="red"
-        onPress={() => generateStory('PDD')}
+        onPress={() => generateStory('AAPL')}
       />
       <Button
         title="Generate Story for TSLA"
