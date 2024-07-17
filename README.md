@@ -23,7 +23,7 @@ npm install --save react-native-zeed-ai
 **Install peer dependencies**
 We rely on two peer dependencies, if you already have it in your app you can skip this step.
 
-`expo` - used to manage the audio in the lottie
+`expo-av` - used to manage the audio in the lottie
 `react-native-webview` - used to display the lottie
 
 To install and use Expo modules, the easiest way to get up and running is with the `install-expo-modules` command. Or if you want to install it manually, please refer to [Expo document](https://docs.expo.dev/bare/installing-expo-modules/).
