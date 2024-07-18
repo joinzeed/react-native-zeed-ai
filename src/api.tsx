@@ -142,7 +142,7 @@ class ApiClient {
   ): Promise<Card[]> {
     const requestData: StoryRequest = {
       action: 'generate',
-      fixed: fixed.filter((item) => item !== 30),
+      fixed: fixed.filter((item) => item !== 41),
       source_ticker: finasset,
       n_cards: n_cards,
       audio: audio,
@@ -150,7 +150,7 @@ class ApiClient {
     };
 
     try {
-      if (fixed.includes(30)) {
+      if (fixed.includes(41)) {
         const [remainingDataCards, flowData] = await Promise.all([
           this.fetchCards<Card>(requestData),
           this.getFlow(finasset, lang),
@@ -268,7 +268,7 @@ class ApiClient {
         try {
           const storyData = await this.getStories(
             item,
-            [27, 29],
+            [38, 40],
             0,
             true,
             lang
