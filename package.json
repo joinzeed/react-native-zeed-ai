@@ -78,8 +78,11 @@
     "@types/react": "^17.0.21"
   },
   "peerDependencies": {
+    "expo": "*",
+    "expo-av": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-webview": "*"
   },
   "workspaces": [
     "example"
@@ -152,12 +155,5 @@
       "module",
       "typescript"
     ]
-  },
-  "dependencies": {
-    "@expo/webpack-config": "^0.17.2",
-    "@typescript-eslint/typescript-estree": "^7.13.0",
-    "expo": "~47.0.14",
-    "expo-av": "~13.0.3",
-    "react-native-webview": "12.4.0"
   }
 }

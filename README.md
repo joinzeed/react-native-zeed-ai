@@ -32,16 +32,8 @@ npx install-expo-modules@latest
 ```
 To install react-native-webview:
 
-With yarn
-
 ```bash
-yarn add react-native-webview@12.4.0
-```
-
-With npm
-
-```bash
-npm install --save react-native-webview
+expo install react-native-webview expo-av
 ```
 
 **Install Install pods**
