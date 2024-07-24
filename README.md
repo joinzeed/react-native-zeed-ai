@@ -30,7 +30,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 ```bash
 npx install-expo-modules@latest
 ```
-To install react-native-webview:
+To install react-native-webview and expo-av:
 
 ```bash
 expo install react-native-webview expo-av
