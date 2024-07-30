@@ -1,6 +1,6 @@
 {
-  "name": "react-native-zeed-ai",
-  "version": "1.0.2",
+  "name": "@joinzeed/react-native-zeed-ai",
+  "version": "1.0.3",
   "description": "Zeed AI Stories SDK for React Native.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -50,7 +50,7 @@
   },
   "homepage": "https://github.com/joinzeed/react-native-zeed-ai#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com/"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",

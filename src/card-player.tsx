@@ -148,20 +148,21 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
           );
         }
 
-        // Process results and update sections with cards
-        const results = await Promise.all(promises);
-        setVideoSections((prevSections) => {
-          return prevSections.map((section) => {
-            const result = results.find(
-              (res) =>
-                Language[res.key as keyof LanguageType]?.[
-                  lang as keyof Translations
-                ] === section.text
-            );
-            if (result) {
-              return { ...section, cards: result.result };
-            }
-            return section;
+        // Process results as they settle and update sections with cards
+        promises.forEach((promise) => {
+          promise.then((result) => {
+            setVideoSections((prevSections) => {
+              return prevSections.map((section) => {
+                if (
+                  Language[result.key as keyof LanguageType]?.[
+                    lang as keyof Translations
+                  ] === section.text
+                ) {
+                  return { ...section, cards: result.result };
+                }
+                return section;
+              });
+            });
           });
         });
       } catch (error) {
