@@ -11,10 +11,16 @@ import { DefaultHost } from './constants';
 
 class ApiClient {
   apiKey?: string;
+  client_id?: string;
   apiHost: string;
 
-  constructor(apiKey?: string, apiHost: string = DefaultHost) {
+  constructor(
+    apiKey?: string,
+    client_id?: string,
+    apiHost: string = DefaultHost
+  ) {
     this.apiKey = apiKey;
+    this.client_id = client_id;
     this.apiHost = apiHost;
   }
 
@@ -27,6 +33,7 @@ class ApiClient {
       n_cards: 0,
       audio: false,
       lang: 'en',
+      client_id: '',
     }
   ): Promise<ApiResponse<T>> {
     // Ensure the API key is provided
@@ -35,7 +42,6 @@ class ApiClient {
         'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
       );
     }
-
     const config: RequestInit = {
       method: 'POST',
       headers: {
@@ -95,6 +101,7 @@ class ApiClient {
         action: 'flowchart',
         source_ticker: finasset,
         lang: lang,
+        client_id: this.client_id,
       }),
     };
 
@@ -147,16 +154,19 @@ class ApiClient {
       n_cards: n_cards,
       audio: audio,
       lang: lang,
+      client_id: this.client_id,
     };
 
     try {
-      if (fixed.includes(41)) {
+      if (fixed.includes(41) && requestData.fixed.length > 0) {
         const [remainingDataCards, flowData] = await Promise.all([
           this.fetchCards<Card>(requestData),
           this.getFlow(finasset, lang),
         ]);
-
         return [...(remainingDataCards.cards || []), ...(flowData.cards || [])];
+      } else if (fixed.includes(41) && requestData.fixed.length === 0) {
+        const flowData = await this.getFlow(finasset, lang);
+        return flowData.cards || [];
       } else {
         const result = await this.fetchCards<Card>(requestData);
         return result.cards || [];

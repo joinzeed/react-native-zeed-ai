@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Button, Alert } from 'react-native';
-import { Zeed, ZeedProvider, useZeed } from 'react-native-zeed-ai';
+import { Zeed, ZeedProvider, useZeed } from '@joinzeed/react-native-zeed-ai';
 
 export default function App() {
-  Zeed.init({ apiKey: 'YOUR_API_KEY', lang: 'es' });
+  Zeed.init({
+    client_id: 'YOUR_CLIENT_ID',
+    apiKey: 'YOUR_API_KEY',
+    lang: 'en',
+  });
   return (
     <ZeedProvider>
       <View style={styles.container}>
@@ -42,9 +46,9 @@ const StoryGenerator = () => {
   return (
     <>
       <Button
-        title="Generate Story for AAPL"
+        title="Generate Story for QQQ"
         color="red"
-        onPress={() => generateStory('AAPL')}
+        onPress={() => generateStory('QQQ')}
       />
       <Button
         title="Generate Story for TSLA"

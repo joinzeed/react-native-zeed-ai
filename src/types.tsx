@@ -66,6 +66,7 @@ export type StoryRequest = {
   audio: boolean;
   lang: keyof Translations;
   tickers?: string[];
+  client_id?: string;
 };
 export type Card = {
   render: Render;
