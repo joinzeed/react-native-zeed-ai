@@ -5,8 +5,8 @@ import type {
   SingleLottie,
   Logo,
   Information,
+  Translations,
 } from './types';
-import type { Translations } from './types';
 import { DefaultHost } from './constants';
 
 class ApiClient {
@@ -244,14 +244,11 @@ class ApiClient {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      if (!data) {
-        console.error('No Information found in the API response', config.body);
-        return { Information: {} };
-      }
-      return data as Information;
+
+      return data;
     } catch (error) {
       console.error('Error in getSectionInformation', error);
-      return { Information: {} };
+      return {};
     }
   }
 
@@ -262,25 +259,35 @@ class ApiClient {
     } = {};
 
     try {
-      const information = await this.getSectionInformation(stocklist, lang);
+      const infor = await this.getSectionInformation(stocklist, lang);
       // Map each stock item to a promise that fetches its stories
       const promises = stocklist.map(async (item) => {
         try {
-          const storyData = await this.getStories(
-            item,
-            [38, 40],
-            0,
-            true,
-            lang
-          );
-          stories[item] = {
-            information: information[item] || {},
-            stories: storyData,
-          };
+          const section1Information = infor[item] as Information;
+          const sectionInfo = section1Information['section1'];
+          const args = sectionInfo?.arguments;
+          if (args) {
+            const storyData = await this.getStories(
+              item,
+              args.fixed,
+              0,
+              true,
+              args.lang
+            );
+            stories[item] = {
+              information: infor[item] || {},
+              stories: storyData,
+            };
+          } else {
+            stories[item] = {
+              information: infor[item] || {},
+              stories: [],
+            };
+          }
         } catch (error) {
           console.error(`Error fetching stories for ${item}:`, error);
           stories[item] = {
-            information: information[item] || {},
+            information: infor[item] || {},
             stories: [],
           };
         }

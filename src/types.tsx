@@ -90,7 +90,7 @@ export type Logo = {
   blurhash: string;
 };
 
-export type Information = { [sectionName: string]: SectionInfo } | {};
+export type Information = { [sectionName: string]: SectionInfo };
 
 export const Language: LanguageType = {
   Performance: { en: 'Performance', es: 'Actuación', ar: 'أداء' },
@@ -102,6 +102,10 @@ export const Language: LanguageType = {
     es: 'Resumen de ganancias',
     ar: 'خلاصة الكسب',
   },
+  Profile: { en: 'Profile', es: 'Perfil', ar: 'حساب تعريفي' },
+  Holdings: { en: 'Holdings', es: 'Valores en cartera', ar: 'المقتنيات' },
+  Metrics: { en: 'Metrics', es: 'Métrica', ar: 'المقاييس' },
+  Geo: { en: 'Geo', es: 'Geo', ar: 'جغرافية' },
 };
 
 export interface LanguageType {
@@ -110,6 +114,10 @@ export interface LanguageType {
   Ratings: Translations;
   Financials: Translations;
   Earnings_Recap: Translations;
+  Holdings: Translations;
+  Metrics: Translations;
+  Profile: Translations;
+  Geo: Translations;
 }
 
 export interface Translations {
