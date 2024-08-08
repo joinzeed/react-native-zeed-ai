@@ -12,13 +12,13 @@
 With yarn
 
 ```bash
-yarn add react-native-zeed-ai
+yarn add @joinzeed/react-native-zeed-ai
 ```
 
 With npm
 
 ```bash
-npm install --save react-native-zeed-ai
+npm install --save @joinzeed/react-native-zeed-ai
 ```
 **Install peer dependencies**
 We rely on two peer dependencies, if you already have it in your app you can skip this step.
@@ -46,7 +46,7 @@ pod install
 
 ## Usage
 
-To use `react-native-zeed-ai`, you need to initialize it with an API key, wrap your application components with `ZeedProvider`, and then use the hooks and components provided by the package to generate and display story content.
+To use `@joinzeed/react-native-zeed-ai`, you need to initialize it with an API key, wrap your application components with `ZeedProvider`, and then use the hooks and components provided by the package to generate and display story content.
 Install peer dependencies
 ### Basic Setup
 We rely on only two peer dependencies, if you already have it in your app you can skip this step.
@@ -58,7 +58,7 @@ expo - to manage the audio inside the lottie
    Import and initialize Zeed with your API key at the entry point of your app. If you haven't the key, just contact the [team](https://zeed.ai/companies) to get one!
 
    ```js
-   import { Zeed } from 'react-native-zeed-ai';
+   import { Zeed } from '@joinzeed/react-native-zeed-ai';
 
    Zeed.init({ apiKey: 'YOUR_API_KEY', lang: 'YOUR LANGUAGE' });
    ```
@@ -74,7 +74,7 @@ expo - to manage the audio inside the lottie
    This allows child components to access Zeed functionalities.
 
    ```js
-   import { ZeedProvider } from 'react-native-zeed-ai';
+   import { ZeedProvider } from '@joinzeed/react-native-zeed-ai';
 
    return <ZeedProvider>{/* Your app components go here */}</ZeedProvider>;
    ```
@@ -90,7 +90,7 @@ stories based on a given symbol. The `Zeed.getStoryCard` function is used to gen
 ```javascript
 import React, { useState, useCallback } from 'react';
 import { View, Button, Alert } from 'react-native';
-import { useZeed } from 'react-native-zeed-ai';
+import { useZeed } from '@joinzeed/react-native-zeed-ai';
 
 const StoryGenerator = () => {
   const [storyCard, setStoryCard] = useState(null);
@@ -146,7 +146,7 @@ The `prefetchStory` method allows you to fetch and store story data for a predef
 1. Get the the setter function from ` useZeed()`
 
 ```javascript
-import { useZeed } from 'react-native-zeed-ai';
+import { useZeed } from '@joinzeed/react-native-zeed-ai';
 
 const { prefetched, setPrefetched } = useZeed();
 ```

@@ -1,6 +1,6 @@
 {
   "name": "@joinzeed/react-native-zeed-ai",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Zeed AI Stories SDK for React Native.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
