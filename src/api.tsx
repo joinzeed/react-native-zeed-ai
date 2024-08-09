@@ -11,16 +11,16 @@ import { DefaultHost } from './constants';
 
 class ApiClient {
   apiKey?: string;
-  client_id?: string;
+  clientId?: string;
   apiHost: string;
 
   constructor(
     apiKey?: string,
-    client_id?: string,
+    clientId?: string,
     apiHost: string = DefaultHost
   ) {
     this.apiKey = apiKey;
-    this.client_id = client_id;
+    this.clientId = clientId;
     this.apiHost = apiHost;
   }
 
@@ -101,7 +101,7 @@ class ApiClient {
         action: 'flowchart',
         source_ticker: finasset,
         lang: lang,
-        client_id: this.client_id,
+        client_id: this.clientId,
       }),
     };
 
@@ -154,7 +154,7 @@ class ApiClient {
       n_cards: n_cards,
       audio: audio,
       lang: lang,
-      client_id: this.client_id,
+      client_id: this.clientId,
     };
 
     try {

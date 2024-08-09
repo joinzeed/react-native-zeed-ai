@@ -4,22 +4,22 @@ import CardPlayer from './card-player';
 import React from 'react';
 class Zeed {
   api?: ApiClient;
-  client_id?: string;
+  clientId?: string;
   apiKey?: string;
   lang!: keyof Translations;
   // Minimal initialization that is expected to be called on app boot
   init = ({
-    client_id,
+    clientId,
     apiKey,
     lang,
   }: {
-    client_id: string;
+    clientId: string;
     apiKey: string;
     lang: keyof Translations;
   }) => {
-    this.client_id = client_id;
+    this.clientId = clientId;
     this.apiKey = apiKey;
-    this.api = new ApiClient(apiKey, client_id); // Initialize the ApiClient with the apiKey
+    this.api = new ApiClient(apiKey, clientId); // Initialize the ApiClient with the apiKey
     this.lang = lang;
   };
 

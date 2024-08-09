@@ -4,7 +4,7 @@ import { Zeed, ZeedProvider, useZeed } from '@joinzeed/react-native-zeed-ai';
 
 export default function App() {
   Zeed.init({
-    client_id: 'YOUR_CLIENT_ID',
+    clientId: 'YOUR_CLIENT_ID',
     apiKey: 'YOUR_API_KEY',
     lang: 'en',
   });

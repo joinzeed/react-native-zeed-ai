@@ -12,14 +12,11 @@ import {
 import type {
   Card,
   Logo,
-  LanguageType,
-  Translations,
   StoryRequest,
   SectionInfo,
   CardPlayerProps,
   Section,
 } from './types';
-import { Language } from './types';
 import VideoProgressBar from './progressBar';
 import LottiePlayer from './lottie-player';
 import { useZeed } from './ZeedProvider';
@@ -91,11 +88,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
         // Process sections
         for (const key in sectionInfo) {
           const section = sectionInfo[key];
-          const sectionText =
-            Language[
-              (section as { name?: keyof LanguageType })
-                ?.name as keyof LanguageType
-            ]?.[lang as keyof Translations];
+          const sectionText = section?.name;
 
           if (sectionText) {
             sections.push({
@@ -114,7 +107,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
         for (const key in sectionInfo) {
           if (key === 'section1' && stories.length > 0) continue;
           const section = sectionInfo[key];
-          const sectionName = (section as { name?: keyof LanguageType })?.name;
+          const sectionName = section?.name;
           const args = (section as { arguments?: StoryRequest })?.arguments;
 
           let promise;
@@ -153,11 +146,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
           promise.then((result) => {
             setVideoSections((prevSections) => {
               return prevSections.map((section) => {
-                if (
-                  Language[result.key as keyof LanguageType]?.[
-                    lang as keyof Translations
-                  ] === section.text
-                ) {
+                if (result.key === section.text) {
                   return { ...section, cards: result.result };
                 }
                 return section;

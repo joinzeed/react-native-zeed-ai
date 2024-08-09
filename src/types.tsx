@@ -93,34 +93,6 @@ export type Logo = {
 
 export type Information = { [sectionName: string]: SectionInfo };
 
-export const Language: LanguageType = {
-  Performance: { en: 'Performance', es: 'Actuación', ar: 'أداء' },
-  Industry: { en: 'Industry', es: 'Industria', ar: 'صناعة' },
-  Ratings: { en: 'Ratings', es: 'Calificaciones', ar: 'التقييمات' },
-  Financials: { en: 'Financials', es: 'Finanzas', ar: 'المالية' },
-  Earnings_Recap: {
-    en: 'Earnings Recap',
-    es: 'Resumen de ganancias',
-    ar: 'خلاصة الكسب',
-  },
-  Profile: { en: 'Profile', es: 'Perfil', ar: 'حساب تعريفي' },
-  Holdings: { en: 'Holdings', es: 'Valores en cartera', ar: 'المقتنيات' },
-  Metrics: { en: 'Metrics', es: 'Métrica', ar: 'المقاييس' },
-  Geo: { en: 'Geo', es: 'Geo', ar: 'جغرافية' },
-};
-
-export interface LanguageType {
-  Performance: Translations;
-  Industry: Translations;
-  Ratings: Translations;
-  Financials: Translations;
-  Earnings_Recap: Translations;
-  Holdings: Translations;
-  Metrics: Translations;
-  Profile: Translations;
-  Geo: Translations;
-}
-
 export interface Translations {
   en: string;
   es: string;
@@ -129,7 +101,7 @@ export interface Translations {
 
 export type SectionInfo = {
   arguments: StoryRequest;
-  name: keyof LanguageType;
+  name: string;
 };
 
 export interface CardPlayerProps {
