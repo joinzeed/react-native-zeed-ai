@@ -89,6 +89,8 @@ export type Render = {
 export type Logo = {
   logo: string;
   blurhash: string;
+  company_name: string;
+  ticker?: string;
 };
 
 export type Information = { [sectionName: string]: SectionInfo };

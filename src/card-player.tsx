@@ -339,7 +339,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
           />
           <View style={styles.name}>
             <Text style={styles.subtitle} numberOfLines={1}>
-              {finasset}
+              {img?.ticker ?? finasset}
             </Text>
           </View>
         </TouchableOpacity>

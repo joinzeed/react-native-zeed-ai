@@ -345,6 +345,8 @@ class ApiClient {
         const image = {
           logo: logoList[0]?.image_url,
           blurhash: logoList[0]?.blurhash,
+          company_name: logoList[0]?.company_name,
+          ticker: logoList[0]?.ticker,
         };
         return image;
       } else {
