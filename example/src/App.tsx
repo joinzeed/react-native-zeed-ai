@@ -6,6 +6,7 @@ export default function App() {
   Zeed.init({
     clientId: 'YOUR_CLIENT_ID',
     apiKey: 'YOUR_API_KEY',
+    userId: 'YOUR_USER_KEY',
     lang: 'en',
   });
   return (

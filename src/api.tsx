@@ -12,15 +12,18 @@ import { DefaultHost } from './constants';
 class ApiClient {
   apiKey?: string;
   clientId?: string;
+  userId?: string;
   apiHost: string;
 
   constructor(
     apiKey?: string,
     clientId?: string,
+    userId?: string,
     apiHost: string = DefaultHost
   ) {
     this.apiKey = apiKey;
     this.clientId = clientId;
+    this.userId = userId;
     this.apiHost = apiHost;
   }
 
@@ -34,12 +37,18 @@ class ApiClient {
       audio: false,
       lang: 'en',
       client_id: '',
+      user_id: '',
     }
   ): Promise<ApiResponse<T>> {
     // Ensure the API key is provided
     if (!this.apiKey) {
       throw new Error(
         'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
+      );
+    }
+    if (!this.clientId || !this.userId) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing clientId or userId. Make sure you set them when calling Zeed.init(), see README for details'
       );
     }
     const config: RequestInit = {
@@ -90,7 +99,11 @@ class ApiClient {
         'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
       );
     }
-
+    if (!this.clientId || !this.userId) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing clientId or userId. Make sure you set them when calling Zeed.init(), see README for details'
+      );
+    }
     const config: RequestInit = {
       method: 'POST',
       headers: {
@@ -102,6 +115,7 @@ class ApiClient {
         source_ticker: finasset,
         lang: lang,
         client_id: this.clientId,
+        user_id: this.userId,
       }),
     };
 
@@ -155,6 +169,7 @@ class ApiClient {
       audio: audio,
       lang: lang,
       client_id: this.clientId,
+      user_id: this.userId,
     };
 
     try {
@@ -172,7 +187,14 @@ class ApiClient {
         return result.cards || [];
       }
     } catch (error) {
-      console.error('Error in getStories', error);
+      if (error instanceof Error && error.message.includes('403')) {
+        console.error(
+          'Error in getStories: Forbidden (403), check your API key',
+          error
+        );
+      } else {
+        console.error('Error in getStories', error);
+      }
       return [];
     }
   }
@@ -183,7 +205,11 @@ class ApiClient {
         'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
       );
     }
-
+    if (!this.clientId || !this.userId) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing clientId or userId. Make sure you set them when calling Zeed.init(), see README for details'
+      );
+    }
     const config: RequestInit = {
       method: 'POST',
       headers: {
@@ -193,6 +219,8 @@ class ApiClient {
       body: JSON.stringify({
         action: 'earning',
         source_ticker: finasset,
+        user_id: this.userId,
+        client_id: this.clientId,
       }),
     };
 
@@ -231,7 +259,11 @@ class ApiClient {
         'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
       );
     }
-
+    if (!this.clientId || !this.userId) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing clientId or userId. Make sure you set them when calling Zeed.init(), see README for details'
+      );
+    }
     const config: RequestInit = {
       method: 'POST',
       headers: {
@@ -257,7 +289,14 @@ class ApiClient {
 
       return data;
     } catch (error) {
-      console.error('Error in getSectionInformation', error);
+      if (error instanceof Error && error.message.includes('403')) {
+        console.error(
+          'Error in getSectionInformation: Forbidden (403), check your API key',
+          error
+        );
+      } else {
+        console.error('Error in getSectionInformation', error);
+      }
       return {};
     }
   }

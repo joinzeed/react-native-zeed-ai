@@ -5,21 +5,25 @@ import React from 'react';
 class Zeed {
   api?: ApiClient;
   clientId?: string;
+  userId?: string;
   apiKey?: string;
   lang!: keyof Translations;
   // Minimal initialization that is expected to be called on app boot
   init = ({
     clientId,
+    userId,
     apiKey,
     lang,
   }: {
     clientId: string;
+    userId: string;
     apiKey: string;
     lang: keyof Translations;
   }) => {
     this.clientId = clientId;
+    this.userId = userId;
     this.apiKey = apiKey;
-    this.api = new ApiClient(apiKey, clientId); // Initialize the ApiClient with the apiKey
+    this.api = new ApiClient(apiKey, clientId, userId); // Initialize the ApiClient with the apiKey
     this.lang = lang;
   };
 

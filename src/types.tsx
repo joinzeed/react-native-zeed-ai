@@ -67,6 +67,7 @@ export type StoryRequest = {
   lang: keyof Translations;
   tickers?: string[];
   client_id?: string;
+  user_id?: string;
 };
 export type Card = {
   render: Render;

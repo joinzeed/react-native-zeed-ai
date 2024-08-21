@@ -4,8 +4,8 @@
 
 ## Platforms Supported
 
--  ✅  IOS
--  ✅  Android
+- ✅ IOS
+- ✅ Android
 
 ## Installation
 
@@ -20,6 +20,7 @@ With npm
 ```bash
 npm install --save @joinzeed/react-native-zeed-ai
 ```
+
 **Install peer dependencies**
 We rely on two peer dependencies, if you already have it in your app you can skip this step.
 
@@ -27,9 +28,11 @@ We rely on two peer dependencies, if you already have it in your app you can ski
 `react-native-webview` - used to display the lottie
 
 To install and use Expo modules, the easiest way to get up and running is with the `install-expo-modules` command. Or if you want to install it manually, please refer to [Expo document](https://docs.expo.dev/bare/installing-expo-modules/).
+
 ```bash
 npx install-expo-modules@latest
 ```
+
 To install react-native-webview and expo-av:
 
 ```bash
@@ -39,16 +42,18 @@ expo install react-native-webview expo-av
 **Install Install pods**
 
 For iOS you need to run pod install to complete the installation. Within the `ios` library of your app, run the following
+
 ```bash
 pod install
 ```
-
 
 ## Usage
 
 To use `@joinzeed/react-native-zeed-ai`, you need to initialize it with an API key, wrap your application components with `ZeedProvider`, and then use the hooks and components provided by the package to generate and display story content.
 Install peer dependencies
+
 ### Basic Setup
+
 We rely on only two peer dependencies, if you already have it in your app you can skip this step.
 react-native-webview - used to display the lottie
 expo - to manage the audio inside the lottie
@@ -60,7 +65,12 @@ expo - to manage the audio inside the lottie
    ```js
    import { Zeed } from '@joinzeed/react-native-zeed-ai';
 
-   Zeed.init({ apiKey: 'YOUR_API_KEY', lang: 'YOUR LANGUAGE' });
+   Zeed.init({
+     apiKey: 'YOUR_API_KEY',
+     lang: 'YOUR LANGUAGE',
+     clientId: 'YOUR_CLIENT_ID',
+     userId: 'YOUR_USER_ID',
+   });
    ```
 
    | Language | Abbreviation | Supported |
