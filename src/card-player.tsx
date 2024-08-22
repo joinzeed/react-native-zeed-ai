@@ -19,20 +19,17 @@ import type {
 } from './types';
 import VideoProgressBar from './progressBar';
 import LottiePlayer from './lottie-player';
-import { useZeed } from './ZeedProvider';
-
+import Zeed from './zeed';
 const { width } = Dimensions.get('window');
 
 const CardPlayer: React.FC<CardPlayerProps> = ({
-  ZeedClient,
-  finasset,
-  audio,
-  lang,
-  onPress,
+  prefetched,
+  visible,
+  setVisible,
+  eventTraits,
 }) => {
-  const { visible, setVisible, prefetched } = useZeed();
   const [img, setImg] = useState<Logo | null>();
-  const [currIndices, setCurrIndices] = useState<number[]>([0, 0, 0, 0]);
+  const [currIndices, setCurrIndices] = useState<number[]>([0]);
   const [currentSection, setCurrentSection] = useState<number>(0);
   const progressBarRefs = useRef<Array<any>>([]);
   const lottiePlayerRef = useRef<any>(null);
@@ -40,6 +37,13 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   const panResponder = useRef<ReturnType<typeof PanResponder.create> | null>(
     null
   );
+  const finasset = eventTraits?.finasset as string;
+  const audio = eventTraits?.audio !== undefined ? !!eventTraits.audio : true;
+  const lang = Zeed.lang;
+  const onPress: (() => void) | undefined =
+    typeof eventTraits?.onPress === 'function'
+      ? eventTraits.onPress
+      : undefined;
 
   // Update the PanResponder instance whenever videoSections and currIndices changes
   useEffect(() => {
@@ -78,7 +82,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
           sectionInfo = data?.information || {};
           stories = data?.stories || [];
         } else {
-          const information = await ZeedClient?.api?.getSectionInformation(
+          const information = await Zeed?.api?.getSectionInformation(
             [finasset],
             lang
           );
@@ -113,7 +117,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
           let promise;
           switch (args?.action) {
             case 'generate':
-              promise = ZeedClient.story(
+              promise = Zeed.story(
                 args.source_ticker,
                 args.fixed,
                 0,
@@ -122,7 +126,7 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
               );
               break;
             case 'earning':
-              promise = ZeedClient.earning(args.source_ticker);
+              promise = Zeed.earning(args.source_ticker);
               break;
             default:
               console.log(`No valid action found for ${section}`);
@@ -160,16 +164,22 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
     };
 
     fetchData();
-  }, [finasset, prefetched, ZeedClient, audio, lang]);
+  }, [audio, finasset, lang, prefetched]);
 
   useEffect(() => {
-    const fetchImage = async () => {
-      const fetchedImg = await ZeedClient?.api?.getZeedStockImage(finasset);
-      setImg(fetchedImg);
-    };
+    if (finasset) {
+      const fetchImage = async () => {
+        const fetchedImg = await Zeed?.api?.getZeedStockImage(finasset);
+        setImg(fetchedImg);
+      };
 
-    fetchImage();
-  }, [ZeedClient?.api, finasset]);
+      fetchImage();
+    }
+  }, [finasset]);
+
+  if (!eventTraits || !finasset) {
+    return null;
+  }
 
   // Handle video completion within a section
   const handleVideoComplete = (index: number, section: Card[]): void => {
@@ -274,6 +284,10 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
       animationType="slide"
       onRequestClose={() => {
         setVisible(!visible);
+        setImg(null);
+        setCurrIndices([0]);
+        setCurrentSection(0);
+        setVideoSections([]);
       }}
       visible={visible}
     >

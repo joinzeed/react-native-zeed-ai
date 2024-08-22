@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import type { ReactNode } from 'react';
-import type { Card, Information } from './types';
+import type { Card, Information, EventTraits } from './types';
+import CardPlayer from './card-player';
 // Define the properties for the Zeed context
 interface ZeedContextProps {
   visible: boolean;
@@ -11,6 +12,8 @@ interface ZeedContextProps {
   setPrefetched: (prefetched: {
     [key: string]: { information: Information; stories: Card[] };
   }) => void;
+  eventTraits: EventTraits | undefined;
+  setEventTraits: (eventTraits: EventTraits | undefined) => void;
 }
 
 // Create the Zeed context with default value as undefined
@@ -36,17 +39,34 @@ interface ZeedProviderProps {
 // ZeedProvider component that provides the Zeed context to its children
 export const ZeedProvider = ({ children }: ZeedProviderProps): JSX.Element => {
   // State for the visibility
+  const [eventTraits, setEventTraits] = useState<EventTraits | undefined>(
+    undefined
+  );
   const [visible, setVisible] = useState<boolean>(true);
   const [prefetched, setPrefetched] = useState<{
     [key: string]: { information: Information; stories: Card[] };
   }>();
-
   return (
     // Provide the Zeed context to the children
-    <ZeedReadyContext.Provider
-      value={{ visible, setVisible, prefetched, setPrefetched }}
-    >
-      {children}
-    </ZeedReadyContext.Provider>
+    <>
+      <ZeedReadyContext.Provider
+        value={{
+          visible,
+          setVisible,
+          prefetched,
+          setPrefetched,
+          eventTraits,
+          setEventTraits,
+        }}
+      >
+        {children}
+        <CardPlayer
+          prefetched={prefetched}
+          visible={visible}
+          setVisible={setVisible}
+          eventTraits={eventTraits}
+        />
+      </ZeedReadyContext.Provider>
+    </>
   );
 };

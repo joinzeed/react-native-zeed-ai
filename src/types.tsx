@@ -1,4 +1,5 @@
-import Zeed from './zeed';
+export type EventTraitValue = string | number | boolean | Date | (() => void);
+export type EventTraits = { [key: string]: EventTraitValue };
 
 export type PresentationStyle =
   | 'fullScreen'
@@ -108,12 +109,12 @@ export type SectionInfo = {
 };
 
 export interface CardPlayerProps {
-  ZeedClient: typeof Zeed;
-  finasset: string;
-  fixed?: string;
-  audio: boolean;
-  lang: keyof Translations;
-  onPress: () => void;
+  prefetched?:
+    | { [key: string]: { information: Information; stories: Card[] } }
+    | undefined;
+  visible?: boolean;
+  setVisible: (visible: boolean) => void;
+  eventTraits?: EventTraits;
 }
 export interface Section {
   text: string;

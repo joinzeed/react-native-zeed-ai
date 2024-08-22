@@ -1,7 +1,6 @@
 import ApiClient from './api';
 import type { Card, Information, Translations } from './types';
-import CardPlayer from './card-player';
-import React from 'react';
+
 class Zeed {
   api?: ApiClient;
   clientId?: string;
@@ -55,27 +54,6 @@ class Zeed {
       );
     }
     return this.api.getEarning(finasset);
-  }
-
-  async getStoryCard(
-    finasset: string,
-    audio: boolean = false,
-    onPress = () => {}
-  ): Promise<JSX.Element | null> {
-    try {
-      return (
-        <CardPlayer
-          ZeedClient={this}
-          finasset={finasset}
-          audio={audio}
-          lang={this.lang}
-          onPress={onPress}
-        />
-      );
-    } catch (error) {
-      console.error('Error fetching stories on button press', error);
-      return null;
-    }
   }
 
   prefetchStory = async (

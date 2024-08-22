@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View, Button, Alert } from 'react-native';
 import { Zeed, ZeedProvider, useZeed } from '@joinzeed/react-native-zeed-ai';
 
@@ -18,31 +18,24 @@ export default function App() {
   );
 }
 const StoryGenerator = () => {
-  const [storyCard, setStoryCard] = useState<JSX.Element | null>(null);
-  const { visible, setVisible, setPrefetched, prefetched } = useZeed();
-
+  const { prefetched, setPrefetched, setVisible, setEventTraits } = useZeed();
   Zeed.prefetchStory(prefetched, setPrefetched).catch(console.error);
-
-  useEffect(() => {
-    if (!visible) {
-      setStoryCard(null);
-    }
-  }, [visible]);
-
   const generateStory = useCallback(
     async (symbol: string) => {
       const onPress = () => {
         Alert.alert('Button Pressed', 'The button has been pressed.');
       };
       try {
-        const card = await Zeed.getStoryCard(symbol, true, onPress);
-        setStoryCard(card);
+        setEventTraits({
+          finasset: symbol,
+          onPress: onPress,
+        });
         setVisible(true);
       } catch (error) {
         console.error('Failed to generate story:', error);
       }
     },
-    [setVisible]
+    [setEventTraits, setVisible]
   );
   return (
     <>
@@ -56,7 +49,6 @@ const StoryGenerator = () => {
         color="red"
         onPress={() => generateStory('TSLA')}
       />
-      {storyCard}
     </>
   );
 };
