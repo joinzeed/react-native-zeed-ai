@@ -13,7 +13,7 @@ export default function App() {
   Zeed.init({
     clientId: 'YOUR_CLIENT_ID',
     apiKey: 'YOUR_API_KEY',
-    userId: 'YOUR_USER_KEY',
+    userId: 'YOUR_USER_ID',
     lang: 'en',
   });
   return (
@@ -33,7 +33,12 @@ const StockLogo = ({
   logo: string;
   onPress: Function;
 }) => (
-  <TouchableOpacity style={styles.logoWrapper} onPress={() => onPress}>
+  <TouchableOpacity
+    style={styles.logoWrapper}
+    onPress={() => {
+      onPress();
+    }}
+  >
     <Image source={{ uri: logo }} style={styles.stockLogo} />
   </TouchableOpacity>
 );
