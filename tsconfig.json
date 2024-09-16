@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "@joinzeed/react-native-zeed-ai": ["./src/index"]
+      "react-native-zeed-ai": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

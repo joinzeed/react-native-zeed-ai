@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { Zeed, ZeedProvider, useZeed } from '@joinzeed/react-native-zeed-ai';
+import { Zeed, ZeedProvider, useZeed } from 'react-native-zeed-ai';
 
 export default function App() {
   Zeed.init({
