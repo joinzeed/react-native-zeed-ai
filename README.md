@@ -103,29 +103,26 @@ import { View, Button, Alert } from 'react-native';
 import { useZeed } from 'react-native-zeed-ai';
 
 const StoryGenerator = () => {
-  const [storyCard, setStoryCard] = useState(null);
-  const { setVisible } = useZeed();
+  const { prefetched, setPrefetched, setVisible, setEventTraits } = useZeed();
+  Zeed.prefetchStory(prefetched, setPrefetched).catch(console.error);
 
   const generateStory = useCallback(
     async (symbol: string) => {
-      const onPress = () => {
-        Alert.alert('Button Pressed', 'The button has been pressed.');
-      };
       try {
-        const card = await Zeed.getStoryCard(symbol, false, onPress);
-        setStoryCard(card);
+        setEventTraits({
+          finasset: symbol,
+        });
         setVisible(true);
       } catch (error) {
         console.error('Failed to generate story:', error);
       }
     },
-    [setVisible]
+    [setEventTraits, setVisible]
   );
 
   return (
     <>
       <Button title="Generate Story" onPress={() => generateStory('AMZN')} />
-      {storyCard}
     </>
   );
 };
