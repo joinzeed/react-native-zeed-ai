@@ -313,7 +313,7 @@ class ApiClient {
       const promises = stocklist.map(async (item) => {
         try {
           const section1Information = infor[item] as Information;
-          const sectionInfo = section1Information['section1'];
+          const sectionInfo = section1Information.section1;
           const args = sectionInfo?.arguments;
           if (args) {
             const storyData = await this.getStories(
@@ -396,6 +396,57 @@ class ApiClient {
       throw error;
     }
   }
-}
 
+  async postStoryReply(
+    finasset: string,
+    message: string,
+    prev_card: any
+  ): Promise<any[]> {
+    const sendData = JSON.stringify({
+      action: 'message',
+      message,
+      source_ticker: finasset,
+      prev_card,
+    });
+
+    if (!this.apiKey) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing API key. Make sure you call Zeed.init() before calling any other methods, see README for details'
+      );
+    }
+    if (!this.clientId || !this.userId) {
+      throw new Error(
+        'Error sending event to Zeed-AI: missing clientId or userId. Make sure you set them when calling Zeed.init(), see README for details'
+      );
+    }
+    const config: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.apiKey,
+      },
+      body: sendData,
+    };
+
+    try {
+      const response = await fetch(
+        this.apiHost + '/visual_story_teller',
+        config
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const filtered = data.cards
+        ? data.cards
+            .filter((item: any) => item?.render)
+            .map((item: any) => item.render)
+        : [];
+      return filtered;
+    } catch (error) {
+      console.error('message error', error);
+      return [];
+    }
+  }
+}
 export default ApiClient;

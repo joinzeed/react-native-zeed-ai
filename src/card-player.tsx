@@ -8,6 +8,9 @@ import {
   Text,
   Modal,
   Image,
+  Alert,
+  Platform,
+  FlatList,
 } from 'react-native';
 import type {
   Card,
@@ -16,11 +19,13 @@ import type {
   SectionInfo,
   CardPlayerProps,
   Section,
+  Render,
 } from './types';
 import VideoProgressBar from './progressBar';
 import LottiePlayer from './lottie-player';
+import InputRow from './chatBox';
 import Zeed from './zeed';
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const CardPlayer: React.FC<CardPlayerProps> = ({
   prefetched,
@@ -33,6 +38,13 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   const [currentSection, setCurrentSection] = useState<number>(0);
   const progressBarRefs = useRef<Array<any>>([]);
   const lottiePlayerRef = useRef<any>(null);
+  const [replies, setReplies] = useState<Render[]>([]);
+  const [replyIndex, setReplyIndex] = useState<[number, number | null]>([
+    0,
+    null,
+  ]);
+  const [loading, setLoading] = useState(false);
+  const flatListRef = useRef<FlatList<Render> | null>(null);
   const [videoSections, setVideoSections] = useState<Section[]>([]);
   const panResponder = useRef<ReturnType<typeof PanResponder.create> | null>(
     null
@@ -48,10 +60,15 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
   // Update the PanResponder instance whenever videoSections and currIndices changes
   useEffect(() => {
     panResponder.current = PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) => {
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
         const { dx, dy } = gestureState;
-        return Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10;
+        const target = evt.target as any;
+        const isInside =
+          target &&
+          target._internalFiberInstanceHandleDEV?.elementType === 'RCTText';
+        return !isInside && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10;
       },
+
       onPanResponderRelease: (_, gestureState) => {
         const { dx } = gestureState;
         setCurrentSection((prevSection) => {
@@ -264,6 +281,61 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
 
     setCurrIndices(updatedIndices);
   };
+  const handleContentSizeChange = () => {
+    if (flatListRef.current && replies.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({
+          animated: true,
+        });
+      }, 100);
+    }
+  };
+
+  const handleSendQuestion = async (question: string) => {
+    try {
+      setLoading(true);
+      const new_card = await Zeed?.api?.postStoryReply(
+        finasset,
+        question,
+        videoSections[currentSection]?.cards?.[currIndices[currentSection] ?? 0]
+          ?.request
+      );
+      // Handle the reply as needed
+      if (new_card && new_card.length > 0 && new_card[0].lottie) {
+        try {
+          if (replies.length === 0) {
+            setReplies([
+              videoSections[currentSection]?.cards?.[
+                currIndices[currentSection] ?? 0
+              ]?.render,
+              new_card[0],
+            ]);
+          } else {
+            setReplies(replies.concat(new_card[0]));
+          }
+          setReplyIndex([currentSection, currIndices[currentSection] ?? 0]);
+        } catch {
+          Alert.alert(
+            'Sorry',
+            'Can not process your message',
+            [
+              {
+                text: 'OK',
+                style: 'cancel',
+              },
+            ],
+            {
+              cancelable: true,
+              userInterfaceStyle: 'dark',
+            }
+          );
+        }
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error sending question:', error);
+    }
+  };
 
   // Functions to handle play and pause
   const handlePause = () => {
@@ -313,22 +385,60 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
             ))}
           </View>
         </View>
-        <LottiePlayer
-          ref={lottiePlayerRef}
-          lottie={
-            videoSections[currentSection]?.cards
-              ? videoSections[currentSection]?.cards?.[
-                  currIndices[currentSection] ?? 0
-                ]?.render.lottie || {}
-              : null
-          }
-          bg_color={
-            videoSections[currentSection]?.cards?.[
-              currIndices[currentSection] ?? 0
-            ]?.render?.bg_color ?? ''
-          }
-          width="100%"
-        />
+        {replies &&
+        replies.length > 1 &&
+        replyIndex[0] === currentSection &&
+        replyIndex[1] === currIndices[currentSection] ? (
+          <FlatList
+            ref={flatListRef}
+            data={replies}
+            renderItem={({ item, index }) => {
+              return (
+                <View
+                  key={index}
+                  style={{
+                    height: Platform.OS === 'ios' ? height - 57 : height,
+                  }}
+                >
+                  <LottiePlayer
+                    ref={lottiePlayerRef}
+                    lottie={item.lottie}
+                    bg_color={item.bg_color}
+                  />
+                </View>
+              );
+            }}
+            // keyExtractor={(item) => item.id}
+            horizontal={false}
+            pagingEnabled={true}
+            initialScrollIndex={replies.length - 1}
+            // onViewableItemsChanged={handleViewableItemsChanged}
+            onContentSizeChange={handleContentSizeChange}
+            getItemLayout={(_, index) => ({
+              length: height,
+              offset: height * index,
+              index,
+            })}
+            contentContainerStyle={styles.contentContainerStyle}
+          />
+        ) : (
+          <LottiePlayer
+            ref={lottiePlayerRef}
+            lottie={
+              videoSections[currentSection]?.cards
+                ? videoSections[currentSection]?.cards?.[
+                    currIndices[currentSection] ?? 0
+                  ]?.render.lottie || {}
+                : null
+            }
+            bg_color={
+              videoSections[currentSection]?.cards?.[
+                currIndices[currentSection] ?? 0
+              ]?.render?.bg_color ?? ''
+            }
+            width="100%"
+          />
+        )}
 
         {/* Next section */}
         <TouchableOpacity
@@ -357,6 +467,18 @@ const CardPlayer: React.FC<CardPlayerProps> = ({
             </Text>
           </View>
         </TouchableOpacity>
+
+        {/* Text box */}
+        <InputRow
+          onSendPress={(text) => handleSendQuestion(text)}
+          loading={loading}
+          // onEmojiPress={() => {}}
+          questions={
+            videoSections[currentSection]?.cards?.[
+              currIndices[currentSection] ?? 0
+            ]?.questions || []
+          }
+        />
       </View>
     </Modal>
   );
@@ -434,6 +556,9 @@ const styles = StyleSheet.create({
   },
   eachProgress: {
     flex: 1,
+  },
+  contentContainerStyle: {
+    flexGrow: 1,
   },
 });
 
